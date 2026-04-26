@@ -1,0 +1,77 @@
+.timer-stage,
+.timer-stage-large {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 10px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.current-label,
+.main-timer,
+.giant-timer,
+.sub-status {
+  position: relative;
+  z-index: 1;
+}
+
+.current-label {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: rgba(92, 255, 135, 0.82);
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.main-timer,
+.giant-timer {
+  font-size: clamp(5.8rem, 19vw, 15rem);
+  line-height: 0.86;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+  color: #39ff14;
+  text-shadow:
+    0 0 4px rgba(57, 255, 20, 0.45),
+    0 0 12px rgba(57, 255, 20, 0.35),
+    0 0 26px rgba(57, 255, 20, 0.2);
+}
+
+.sub-status {
+  color: rgba(92, 255, 135, 0.55);
+  font-size: clamp(0.92rem, 1.4vw, 1.02rem);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 900px) {
+  .main-timer,
+  .giant-timer {
+    font-size: clamp(4.8rem, 19vw, 11rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .current-label {
+    font-size: clamp(0.88rem, 3vw, 1.05rem);
+  }
+
+  .main-timer,
+  .giant-timer {
+    font-size: clamp(4.2rem, 20vw, 7.4rem);
+    letter-spacing: 0.01em;
+  }
+
+  .sub-status {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .main-timer,
+  .giant-timer {
+    font-size: clamp(4rem, 16vw, 9rem);
+  }
+}

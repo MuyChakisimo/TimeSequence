@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>TimeSequence.html</title>
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+
+  <body>
+    <div class="app-shell">
+      <!-- LEFT MENU -->
+      <aside id="sideMenu" class="side-panel hidden">
+        <div class="panel-header">
+          <h2>Menu</h2>
+          <button
+            id="closeMenuButton"
+            class="icon-button"
+            aria-label="Close menu"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+
+        <section class="panel-section">
+          <h3>Options</h3>
+          <div class="checkbox-row">
+            <label>
+              <input type="checkbox" id="buzzerToggle" checked />
+              Enable buzzer
+            </label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <h3>Presets</h3>
+          <div id="presetList" class="preset-list"></div>
+        </section>
+
+        <section class="panel-section">
+          <h3>Queue</h3>
+          <div id="timerQueue" class="timer-queue"></div>
+        </section>
+      </aside>
+
+      <!-- RIGHT ADD PANEL -->
+      <aside id="addPanel" class="side-panel right-panel hidden">
+        <div class="panel-header">
+          <h2>Add Timer</h2>
+          <button
+            id="closeAddPanelButton"
+            class="icon-button"
+            aria-label="Close add panel"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+
+        <form id="timerForm" class="timer-form">
+          <label>
+            Label
+            <input
+              id="timerLabel"
+              type="text"
+              placeholder="Example: Warm Up"
+              maxlength="40"
+            />
+          </label>
+
+          <div class="time-input-row">
+            <label>
+              Hours
+              <input id="timerHours" type="number" min="0" max="23" value="0" />
+            </label>
+
+            <label>
+              Minutes
+              <input
+                id="timerMinutes"
+                type="number"
+                min="0"
+                max="59"
+                value="5"
+              />
+            </label>
+
+            <label>
+              Seconds
+              <input
+                id="timerSeconds"
+                type="number"
+                min="0"
+                max="59"
+                value="0"
+              />
+            </label>
+          </div>
+
+          <button type="submit" class="primary-button">Add to Sequence</button>
+        </form>
+      </aside>
+
+      <!-- MAIN UI -->
+      <main class="main-view">
+        <!-- HEADER (10%) -->
+        <section class="top-control-bar">
+          <div class="left-controls">
+            <button
+              id="menuButton"
+              class="icon-button"
+              aria-label="Open menu"
+              type="button"
+            >
+              ☰
+            </button>
+          </div>
+
+          <!-- BOOMBOX CONTROLS -->
+          <div class="center-controls boombox-controls">
+            <button
+              id="startButton"
+              class="control-button boombox-button btn-play"
+              type="button"
+              aria-label="Start"
+            >
+              <span class="btn-icon">▶</span>
+              <span class="btn-label">PLAY</span>
+            </button>
+
+            <button
+              id="pauseButton"
+              class="control-button boombox-button btn-pause"
+              type="button"
+              aria-label="Pause"
+            >
+              <span class="btn-icon">❚❚</span>
+              <span class="btn-label">PAUSE</span>
+            </button>
+
+            <button
+              id="resetButton"
+              class="control-button boombox-button btn-reset"
+              type="button"
+              aria-label="Reset"
+            >
+              <span class="btn-icon">↺</span>
+              <span class="btn-label">RESET</span>
+            </button>
+
+            <button
+              id="clearAllButton"
+              class="control-button boombox-button btn-clear"
+              type="button"
+              aria-label="Clear all"
+            >
+              <span class="btn-icon">🗑</span>
+              <span class="btn-label">CLEAR</span>
+            </button>
+          </div>
+
+          <div class="right-controls">
+            <button
+              id="addTimerButton"
+              class="icon-button"
+              aria-label="Add timer"
+              type="button"
+            >
+              +
+            </button>
+          </div>
+        </section>
+
+        <!-- SEQUENCE (20%) -->
+        <section class="sequence-strip-wrap">
+          <div class="sequence-header">Sequence</div>
+          <div id="heroQueue" class="hero-queue compact"></div>
+        </section>
+
+        <!-- TIMER (65%) -->
+        <section class="timer-stage timer-stage-large">
+          <div id="currentLabel" class="current-label">No Timer Loaded</div>
+
+          <div id="mainTimer" class="main-timer giant-timer">00:00:00</div>
+
+          <div id="subStatus" class="sub-status">
+            Add a timer with the + button
+          </div>
+        </section>
+
+        <!-- PROGRESS (5%) -->
+        <section class="progress-wrap">
+          <div class="progress-track">
+            <div id="progressBar" class="progress-bar"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./js/app.js"></script>
+  </body>
+</html>

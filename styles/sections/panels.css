@@ -1,0 +1,121 @@
+.side-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: min(370px, 92vw);
+  padding: 18px;
+  background: #030303;
+  border-right: 1px solid rgba(57, 255, 20, 0.14);
+  box-shadow: 0 0 24px rgba(57, 255, 20, 0.06);
+  z-index: 20;
+  overflow-y: auto;
+  transform: translateX(0);
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.side-panel.hidden {
+  transform: translateX(-110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.right-panel {
+  right: 0;
+  left: auto;
+  border-right: none;
+  border-left: 1px solid rgba(57, 255, 20, 0.14);
+}
+
+.right-panel.hidden {
+  transform: translateX(110%);
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.panel-section {
+  padding: 16px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: #050505;
+  border: 1px solid rgba(57, 255, 20, 0.12);
+}
+
+.panel-section h3,
+.panel-header h2 {
+  margin: 0 0 12px;
+  color: #a8ffa8;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+}
+
+.timer-queue,
+.preset-list {
+  display: grid;
+  gap: 10px;
+}
+
+.queue-item,
+.preset-item {
+  border: 1px solid rgba(57, 255, 20, 0.1);
+  background: #060606;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.queue-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.queue-title {
+  font-weight: bold;
+  color: #b9ffb9;
+}
+
+.queue-time {
+  color: rgba(92, 255, 135, 0.75);
+  font-size: 0.95rem;
+}
+
+.queue-actions,
+.preset-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.queue-item button,
+.preset-item button {
+  border: 1px solid rgba(57, 255, 20, 0.14);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  background: #0a0a0a;
+  color: #7fff7f;
+}
+
+.queue-item button:hover,
+.preset-item button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 10px rgba(57, 255, 20, 0.12);
+}
+
+@media (max-width: 640px) {
+  .side-panel {
+    width: min(320px, 94vw);
+    padding: 14px;
+  }
+}

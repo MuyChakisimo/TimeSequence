@@ -1,0 +1,275 @@
+.top-control-bar {
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  align-items: center;
+  gap: 12px;
+  min-height: 0;
+  padding-top: max(8px, env(safe-area-inset-top));
+}
+
+.left-controls,
+.right-controls {
+  display: flex;
+  align-items: center;
+}
+
+.left-controls {
+  justify-content: flex-start;
+}
+
+.right-controls {
+  justify-content: flex-end;
+}
+
+.center-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.icon-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 0;
+  border: 1px solid rgba(57, 255, 20, 0.22);
+  background: #050505;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 1.3rem;
+  box-shadow: none;
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease;
+}
+
+.icon-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+/* Reset old button styling so boombox buttons do not inherit rounding/padding */
+.control-button,
+.primary-button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Keep submit button in add panel looking like a normal button */
+.timer-form .primary-button {
+  padding: 10px 16px;
+  border: 1px solid rgba(57, 255, 20, 0.22);
+  background: #081308;
+  color: #9dff9d;
+  font-weight: 700;
+  border-radius: 0;
+  white-space: nowrap;
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease;
+}
+
+.timer-form .primary-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+.danger-button {
+  color: #ff7a7a;
+}
+
+/* =========================
+   FLAT CONNECTED CONTROL BAR
+========================= */
+
+.boombox-controls {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: stretch;
+
+  width: 100%;
+  max-width: 600px;
+  height: 60px;
+
+  margin: 0 auto;
+  padding: 0;
+
+  border: 3px solid #1a1a1a;
+  border-radius: 0 !important;
+  overflow: hidden;
+
+  background: #0b0b0b;
+  box-shadow: none !important;
+}
+
+.boombox-button {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border: none;
+  border-right: 3px solid #1a1a1a;
+  border-radius: 0 !important;
+
+  background: #0b0b0b;
+  color: #cccccc;
+  box-shadow: none !important;
+}
+
+.boombox-button:last-child {
+  border-right: none;
+}
+
+.boombox-button:hover {
+  background: #121212;
+  transform: none;
+}
+
+.boombox-button:active {
+  background: #050505;
+  transform: translateY(1px);
+}
+
+/* icon + label */
+.btn-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 800;
+  color: inherit;
+  text-shadow: none;
+}
+
+.btn-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: inherit;
+  opacity: 0.95;
+}
+
+/* Individual colors */
+.boombox-button.btn-play {
+  color: #39ff14;
+}
+
+.boombox-button.btn-pause {
+  color: #4da6ff;
+}
+
+.boombox-button.btn-reset {
+  color: #ff9f1a;
+}
+
+.boombox-button.btn-clear {
+  color: #ff4d4d;
+}
+
+/* Glow only when pressed */
+.boombox-button.btn-play:active .btn-icon,
+.boombox-button.btn-play:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(57, 255, 20, 0.55),
+    0 0 10px rgba(57, 255, 20, 0.28);
+}
+
+.boombox-button.btn-pause:active .btn-icon,
+.boombox-button.btn-pause:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(77, 166, 255, 0.55),
+    0 0 10px rgba(77, 166, 255, 0.28);
+}
+
+.boombox-button.btn-reset:active .btn-icon,
+.boombox-button.btn-reset:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(255, 159, 26, 0.55),
+    0 0 10px rgba(255, 159, 26, 0.28);
+}
+
+.boombox-button.btn-clear:active .btn-icon,
+.boombox-button.btn-clear:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(255, 77, 77, 0.55),
+    0 0 10px rgba(255, 77, 77, 0.28);
+}
+
+@media (max-width: 900px) {
+  .top-control-bar {
+    grid-template-columns: 56px 1fr 56px;
+    gap: 4px;
+  }
+
+  .icon-button {
+    width: 44px;
+    height: 44px;
+    font-size: 1.15rem;
+  }
+
+  .boombox-controls {
+    width: min(420px, 100%);
+    height: 64px;
+  }
+
+  .btn-icon {
+    font-size: 1.3rem;
+  }
+
+  .btn-label {
+    font-size: 0.58rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .top-control-bar {
+    grid-template-columns: 50px 1fr 50px;
+    gap: 4px;
+  }
+
+  .icon-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+
+  .boombox-controls {
+    width: 100%;
+    max-width: 640px;
+  }
+
+  .btn-icon {
+    font-size: 1rem;
+  }
+
+  .btn-label {
+    font-size: 0.5rem;
+  }
+}
+
+.boombox-button.is-disabled,
+.icon-button.is-disabled,
+.control-button.is-disabled,
+.primary-button.is-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.boombox-button.is-active .btn-icon,
+.boombox-button.is-active .btn-label {
+  text-shadow: 0 0 8px currentColor;
+}
