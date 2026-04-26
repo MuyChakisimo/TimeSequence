@@ -47,63 +47,88 @@
         </section>
       </aside>
 
-      <!-- RIGHT ADD PANEL -->
-      <aside id="addPanel" class="side-panel right-panel hidden">
-        <div class="panel-header">
-          <h2>Add Timer</h2>
-          <button
-            id="closeAddPanelButton"
-            class="icon-button"
-            aria-label="Close add panel"
-            type="button"
-          >
-            ✕
-          </button>
-        </div>
-
-        <form id="timerForm" class="timer-form">
-          <label>
-            Label
-            <input
-              id="timerLabel"
-              type="text"
-              placeholder="Example: Warm Up"
-              maxlength="40"
-            />
-          </label>
-
-          <div class="time-input-row">
-            <label>
-              Hours
-              <input id="timerHours" type="number" min="0" max="23" value="0" />
-            </label>
-
-            <label>
-              Minutes
-              <input
-                id="timerMinutes"
-                type="number"
-                min="0"
-                max="59"
-                value="5"
-              />
-            </label>
-
-            <label>
-              Seconds
-              <input
-                id="timerSeconds"
-                type="number"
-                min="0"
-                max="59"
-                value="0"
-              />
-            </label>
+      <!-- TIME ENTRY WINDOW -->
+      <div id="timeEntryModal" class="modal-overlay hidden" aria-hidden="true">
+        <div
+          class="modal-window"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="timeEntryModalTitle"
+        >
+          <div class="modal-header">
+            <h2 id="timeEntryModalTitle">Add Timer</h2>
+            <button
+              id="closeTimeEntryButton"
+              class="icon-button"
+              aria-label="Close time entry window"
+              type="button"
+            >
+              ✕
+            </button>
           </div>
 
-          <button type="submit" class="primary-button">Add to Sequence</button>
-        </form>
-      </aside>
+          <form id="timerForm" class="timer-form modal-form">
+            <label>
+              Label
+              <input
+                id="timerLabel"
+                type="text"
+                placeholder="Example: Warm Up"
+                maxlength="40"
+              />
+            </label>
+
+            <div class="time-input-row">
+              <label>
+                Hours
+                <input
+                  id="timerHours"
+                  type="number"
+                  min="0"
+                  max="23"
+                  value="0"
+                />
+              </label>
+
+              <label>
+                Minutes
+                <input
+                  id="timerMinutes"
+                  type="number"
+                  min="0"
+                  max="59"
+                  value="5"
+                />
+              </label>
+
+              <label>
+                Seconds
+                <input
+                  id="timerSeconds"
+                  type="number"
+                  min="0"
+                  max="59"
+                  value="0"
+                />
+              </label>
+            </div>
+
+            <div class="modal-actions">
+              <button
+                id="cancelTimeEntryButton"
+                class="secondary-modal-button"
+                type="button"
+              >
+                Cancel
+              </button>
+
+              <button type="submit" class="primary-button">
+                Add to Sequence
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <!-- MAIN UI -->
       <main class="main-view">

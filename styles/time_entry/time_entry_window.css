@@ -1,0 +1,76 @@
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.78);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-window {
+  width: min(520px, 92vw);
+  border: 1px solid rgba(57, 255, 20, 0.16);
+  background: #050505;
+  box-shadow:
+    0 0 24px rgba(0, 0, 0, 0.6),
+    inset 0 0 0 1px rgba(57, 255, 20, 0.04);
+  padding: 18px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: #b9ffb9;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+}
+
+.modal-form {
+  gap: 16px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.secondary-modal-button {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #111111;
+  color: #d6d6d6;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.secondary-modal-button:hover {
+  background: #1a1a1a;
+}
+
+@media (max-width: 640px) {
+  .modal-window {
+    width: min(94vw, 520px);
+    padding: 14px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .secondary-modal-button,
+  .modal-actions .primary-button {
+    width: 100%;
+  }
+}
