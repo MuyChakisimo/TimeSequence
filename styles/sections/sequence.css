@@ -92,6 +92,17 @@
   color: #777;
 }
 
+.hero-timer-chip.total-chip {
+  border-color: rgba(77, 166, 255, 0.3);
+  background: #07111a;
+}
+
+.hero-timer-chip.total-chip .hero-chip-index,
+.hero-timer-chip.total-chip .hero-chip-label,
+.hero-timer-chip.total-chip .hero-chip-time {
+  color: #8fc8ff;
+}
+
 /* =========================
    TEXT
 ========================= */

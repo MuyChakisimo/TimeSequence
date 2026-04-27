@@ -18,6 +18,7 @@ export class UIManager {
     this.elements = {
       menuButton: document.getElementById("menuButton"),
       addTimerButton: document.getElementById("addTimerButton"),
+      addPresetButton: document.getElementById("addPresetButton"),
       closeMenuButton: document.getElementById("closeMenuButton"),
       sideMenu: document.getElementById("sideMenu"),
 
@@ -38,7 +39,6 @@ export class UIManager {
       timerSeconds: document.getElementById("timerSeconds"),
 
       buzzerToggle: document.getElementById("buzzerToggle"),
-      timerQueue: document.getElementById("timerQueue"),
       presetList: document.getElementById("presetList"),
       heroQueue: document.getElementById("heroQueue"),
 
@@ -72,6 +72,12 @@ export class UIManager {
         }
 
         this.bus.emit("time-entry:open");
+      });
+    }
+
+    if (el.addPresetButton) {
+      el.addPresetButton.addEventListener("click", () => {
+        this.bus.emit("preset-editor:open-new");
       });
     }
 
@@ -160,23 +166,51 @@ export class UIManager {
     });
   }
 
+  getTotalDuration(timers = []) {
+    return timers.reduce((sum, timer) => sum + (timer.duration || 0), 0);
+  }
+
+  getPresetDisplayName(preset, index) {
+    const name = preset?.name?.trim();
+    return name || `Preset ${index + 1}`;
+  }
+
   renderPresets() {
     if (!this.elements.presetList) return;
 
     const presets = this.presets.getPresets();
 
     this.elements.presetList.innerHTML = presets
-      .map(
-        (preset) => `
+      .map((preset, index) => {
+        const totalDuration = this.getTotalDuration(preset.timers || []);
+        const presetName = this.getPresetDisplayName(preset, index);
+
+        return `
           <div class="preset-item">
-            <div class="queue-title">${preset.name}</div>
-            <div class="queue-time">${preset.timers.length} timer(s)</div>
+            <div class="queue-item-top">
+              <div>
+                <div class="queue-title">${this.escape(presetName)}</div>
+                <div class="queue-time">
+                  ${(preset.timers || []).length} timer(s) • ${formatSecondsToClock(totalDuration)}
+                </div>
+              </div>
+              <button
+                type="button"
+                class="preset-edit-button"
+                data-edit-preset-id="${preset.id}"
+                aria-label="Edit ${this.escape(presetName)}"
+                title="Edit ${this.escape(presetName)}"
+              >
+                ✎
+              </button>
+            </div>
+
             <div class="preset-actions">
               <button data-preset-id="${preset.id}">Load</button>
             </div>
           </div>
-        `,
-      )
+        `;
+      })
       .join("");
 
     this.elements.presetList
@@ -186,45 +220,12 @@ export class UIManager {
           this.bus.emit("ui:load-preset", button.dataset.presetId);
         });
       });
-  }
 
-  renderQueue(timers, currentIndex) {
-    if (!this.elements.timerQueue) return;
-
-    if (!timers.length) {
-      this.elements.timerQueue.innerHTML = `<div class="queue-item">No timers yet.</div>`;
-      return;
-    }
-
-    this.elements.timerQueue.innerHTML = timers
-      .map(
-        (timer, index) => `
-          <div class="queue-item">
-            <div class="queue-item-top">
-              <div>
-                <div class="queue-title">
-                  ${index === currentIndex ? "▶ " : ""}${this.escape(timer.label)}
-                </div>
-                <div class="queue-time">${formatSecondsToClock(timer.duration)}</div>
-              </div>
-            </div>
-            <div class="queue-actions">
-              <button data-action="up" data-id="${timer.id}">Up</button>
-              <button data-action="remove" data-id="${timer.id}">Remove</button>
-            </div>
-          </div>
-        `,
-      )
-      .join("");
-
-    this.elements.timerQueue
-      .querySelectorAll("button[data-action]")
+    this.elements.presetList
+      .querySelectorAll("button[data-edit-preset-id]")
       .forEach((button) => {
         button.addEventListener("click", () => {
-          this.bus.emit("ui:queue-action", {
-            action: button.dataset.action,
-            id: button.dataset.id,
-          });
+          this.bus.emit("ui:edit-preset", button.dataset.editPresetId);
         });
       });
   }
@@ -242,7 +243,9 @@ export class UIManager {
       return;
     }
 
-    this.elements.heroQueue.innerHTML = timers
+    const totalDuration = this.getTotalDuration(timers);
+
+    const timerChips = timers
       .map((timer, index) => {
         let stateClass = "";
 
@@ -261,6 +264,16 @@ export class UIManager {
         `;
       })
       .join("");
+
+    const totalChip = `
+      <div class="hero-timer-chip total-chip">
+        <div class="hero-chip-index">Total</div>
+        <div class="hero-chip-label">${timers.length} timer(s)</div>
+        <div class="hero-chip-time">${formatSecondsToClock(totalDuration)}</div>
+      </div>
+    `;
+
+    this.elements.heroQueue.innerHTML = timerChips + totalChip;
   }
 
   updateMainDisplay({ label, remaining, progress, index, total }) {

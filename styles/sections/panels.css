@@ -9,15 +9,22 @@
   box-shadow: 0 0 24px rgba(57, 255, 20, 0.06);
   z-index: 20;
   overflow-y: auto;
+
   transform: translateX(0);
+  opacity: 1;
+  visibility: visible;
+
   transition:
-    transform 0.25s ease,
-    opacity 0.25s ease;
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+  will-change: transform, opacity;
 }
 
 .side-panel.hidden {
-  transform: translateX(-110%);
+  transform: translateX(-105%);
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
 }
 
@@ -29,7 +36,7 @@
 }
 
 .right-panel.hidden {
-  transform: translateX(110%);
+  transform: translateX(105%);
 }
 
 .panel-header {
@@ -42,7 +49,7 @@
 .panel-section {
   padding: 16px;
   margin-bottom: 14px;
-  border-radius: 10px;
+  border-radius: 0;
   background: #050505;
   border: 1px solid rgba(57, 255, 20, 0.12);
 }
@@ -68,7 +75,7 @@
 .preset-item {
   border: 1px solid rgba(57, 255, 20, 0.1);
   background: #060606;
-  border-radius: 10px;
+  border-radius: 0;
   padding: 12px;
 }
 
@@ -100,7 +107,7 @@
 .queue-item button,
 .preset-item button {
   border: 1px solid rgba(57, 255, 20, 0.14);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 10px;
   cursor: pointer;
   background: #0a0a0a;
@@ -109,8 +116,16 @@
 
 .queue-item button:hover,
 .preset-item button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.12);
+  background: #141414;
+}
+
+.preset-edit-button {
+  border: 1px solid rgba(57, 255, 20, 0.14);
+  background: #0a0a0a;
+  color: #8fff8f;
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 0;
 }
 
 @media (max-width: 640px) {

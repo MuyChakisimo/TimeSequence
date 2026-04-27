@@ -8,7 +8,10 @@ import { TimerManager } from "./managers/timer_manager.js";
 import { UIManager } from "./managers/ui_manager.js";
 import { AppManager } from "./managers/app_manager.js";
 import { TimeEntryManager } from "./managers/time_entry_manager.js";
+import { PresetEditorManager } from "./managers/preset_editor_manager.js";
+
 import { TimeEntry } from "./time_entry/time_entry.js";
+import { PresetEditor } from "./presets/preset_editor.js";
 
 const bus = new EventBus();
 const logger = new Logger(true);
@@ -22,6 +25,14 @@ const ui = new UIManager(bus, presets, logger);
 const timeEntry = new TimeEntry();
 const timeEntryManager = new TimeEntryManager(bus, timeEntry, logger);
 
+const presetEditor = new PresetEditor();
+const presetEditorManager = new PresetEditorManager(
+  bus,
+  presetEditor,
+  presets,
+  logger,
+);
+
 const app = new AppManager({
   bus,
   logger,
@@ -34,4 +45,5 @@ const app = new AppManager({
 });
 
 timeEntryManager.init();
+presetEditorManager.init();
 app.init();

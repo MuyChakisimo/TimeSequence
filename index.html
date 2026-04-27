@@ -37,13 +37,20 @@
         </section>
 
         <section class="panel-section">
-          <h3>Presets</h3>
-          <div id="presetList" class="preset-list"></div>
-        </section>
+          <div class="queue-item-top">
+            <h3>Presets</h3>
+            <button
+              id="addPresetButton"
+              class="preset-edit-button"
+              type="button"
+              aria-label="Add preset"
+              title="Add preset"
+            >
+              +
+            </button>
+          </div>
 
-        <section class="panel-section">
-          <h3>Queue</h3>
-          <div id="timerQueue" class="timer-queue"></div>
+          <div id="presetList" class="preset-list"></div>
         </section>
       </aside>
 
@@ -114,7 +121,6 @@
             </div>
 
             <div class="time-presets">
-              <!-- Seconds -->
               <button
                 type="button"
                 class="time-preset-button"
@@ -136,8 +142,6 @@
               >
                 1 min
               </button>
-
-              <!-- Existing -->
               <button
                 type="button"
                 class="time-preset-button"
@@ -178,9 +182,88 @@
         </div>
       </div>
 
+      <!-- PRESET EDITOR WINDOW -->
+      <div
+        id="presetEditorModal"
+        class="preset-editor-overlay hidden"
+        aria-hidden="true"
+      >
+        <div
+          class="preset-editor-window"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="presetEditorTitle"
+        >
+          <div class="preset-editor-header">
+            <h2 id="presetEditorTitle">New Preset</h2>
+            <button
+              id="closePresetEditorButton"
+              class="icon-button"
+              aria-label="Close preset editor"
+              type="button"
+            >
+              ✕
+            </button>
+          </div>
+
+          <form id="presetEditorForm" class="preset-editor-form">
+            <label class="preset-row-label preset-row-label-wide">
+              Preset Name
+              <input
+                id="presetNameInput"
+                type="text"
+                maxlength="50"
+                autocomplete="off"
+              />
+            </label>
+
+            <div>
+              <div class="preset-editor-section-title">Timers</div>
+              <div id="presetTimersList" class="preset-timers-list"></div>
+            </div>
+
+            <button
+              id="addPresetTimerRowButton"
+              class="preset-row-add-button"
+              type="button"
+            >
+              + Add Timer
+            </button>
+
+            <div class="preset-editor-actions">
+              <button
+                id="deletePresetButton"
+                class="preset-editor-danger-button"
+                type="button"
+              >
+                Delete Preset
+              </button>
+
+              <div class="preset-editor-actions-right">
+                <button
+                  id="cancelPresetEditorButton"
+                  class="preset-editor-secondary-button"
+                  type="button"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  id="savePresetButton"
+                  class="preset-editor-primary-button"
+                  type="submit"
+                >
+                  Done
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <!-- MAIN UI -->
       <main class="main-view">
-        <!-- HEADER (10%) -->
+        <!-- HEADER -->
         <section class="top-control-bar">
           <div class="left-controls">
             <button
@@ -239,11 +322,11 @@
           <div class="right-controls">
             <button
               id="addTimerButton"
-              class="icon-button"
+              class="icon-button add-timer-button"
               aria-label="Add timer"
               type="button"
             >
-              +
+              +⏱
             </button>
           </div>
         </section>

@@ -63,16 +63,25 @@ export class AppManager {
     });
 
     this.bus.on("ui:load-preset", (presetId) => {
-      const preset = this.presets
-        .getPresets()
-        .find((item) => item.id === presetId);
-
+      const preset = this.presets.getPresetById(presetId);
       if (!preset) return;
 
       this.timer.stop();
       this.sequence.clearAll();
       this.sequence.addTimers(preset.timers);
       this.sequence.resetSequencePosition();
+      this.refreshUI();
+    });
+
+    this.bus.on("preset:save", (presetData) => {
+      this.presets.savePreset(presetData);
+      this.ui.renderPresets();
+      this.refreshUI();
+    });
+
+    this.bus.on("preset:delete", (presetId) => {
+      this.presets.deletePreset(presetId);
+      this.ui.renderPresets();
       this.refreshUI();
     });
 
@@ -138,7 +147,7 @@ export class AppManager {
     const currentIndex = this.sequence.getCurrentIndex();
     const current = this.sequence.getCurrentTimer();
 
-    this.ui.renderQueue(timers, currentIndex);
+    this.ui.renderPresets();
     this.ui.renderHeroQueue(timers, currentIndex);
     this.ui.updateBuzzer(this.sequence.getBuzzerEnabled());
 
@@ -161,8 +170,6 @@ export class AppManager {
 
     const duration = current.duration;
 
-    /* Full-to-empty progress:
-       100% at start, 0% at end */
     const progress = duration > 0 ? (remaining / duration) * 100 : 0;
 
     this.ui.updateMainDisplay({
