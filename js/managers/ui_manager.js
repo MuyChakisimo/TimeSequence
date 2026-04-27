@@ -282,9 +282,13 @@ export class UIManager {
     }
 
     if (this.elements.mainTimer) {
-      this.elements.mainTimer.textContent = formatSecondsToClock(
-        remaining ?? 0,
+      const time = formatSecondsToClock(remaining ?? 0);
+
+      this.elements.mainTimer.innerHTML = time.replace(
+        /:/g,
+        "<span class='colon'>:</span>",
       );
+
       this.fitTimerText();
     }
 

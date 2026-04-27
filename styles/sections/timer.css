@@ -41,7 +41,6 @@
 
 .main-timer,
 .giant-timer {
-  /* JS will overwrite this dynamically */
   font-size: 10rem;
   line-height: 0.8;
   font-weight: 900;
@@ -54,6 +53,12 @@
   white-space: nowrap;
   display: inline-block;
   max-width: 100%;
+}
+
+.colon {
+  display: inline-block;
+  transform: translateY(-0.3em);
+  font-size: 0.6em;
 }
 
 /* =========================
