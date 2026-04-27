@@ -33,6 +33,14 @@ export class PresetEditor {
   close() {
     if (!this.elements.modal) return;
 
+    // Move focus somewhere safe (like the + button)
+    const safeFocusTarget = document.getElementById("addPresetButton");
+    if (safeFocusTarget) {
+      safeFocusTarget.focus();
+    } else {
+      document.body.focus();
+    }
+
     this.elements.modal.classList.add("hidden");
     this.elements.modal.setAttribute("aria-hidden", "true");
   }
