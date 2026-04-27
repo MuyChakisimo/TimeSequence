@@ -6,8 +6,11 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
-    <title>TimeSequence.html</title>
+
+    <title>TimeSequence</title>
+
     <link rel="stylesheet" href="./styles/main.css" />
+
     <link
       rel="icon"
       href="data:image/svg+xml,
@@ -15,6 +18,17 @@
   <text y='.85em' font-size='80' fill='%2339ff14'>⏱</text>
 </svg>"
     />
+
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#000000" />
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="TimeSequence" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   </head>
 
   <body>
@@ -365,5 +379,20 @@
     </div>
 
     <script type="module" src="./js/app.js"></script>
+
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(() => {
+              console.log("Service Worker registered");
+            })
+            .catch((error) => {
+              console.error("Service Worker registration failed:", error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
