@@ -11,6 +11,7 @@ export class UIManager {
     this.cache();
     this.bindUI();
     this.renderPresets();
+    this.fitTimerText();
   }
 
   cache() {
@@ -40,6 +41,8 @@ export class UIManager {
       timerQueue: document.getElementById("timerQueue"),
       presetList: document.getElementById("presetList"),
       heroQueue: document.getElementById("heroQueue"),
+
+      timePresetButtons: document.querySelectorAll(".time-preset-button"),
     };
   }
 
@@ -48,13 +51,17 @@ export class UIManager {
 
     if (el.menuButton) {
       el.menuButton.addEventListener("click", () => {
-        el.sideMenu.classList.toggle("hidden");
+        if (el.sideMenu) {
+          el.sideMenu.classList.toggle("hidden");
+        }
       });
     }
 
     if (el.closeMenuButton) {
       el.closeMenuButton.addEventListener("click", () => {
-        el.sideMenu.classList.add("hidden");
+        if (el.sideMenu) {
+          el.sideMenu.classList.add("hidden");
+        }
       });
     }
 
@@ -74,9 +81,9 @@ export class UIManager {
 
         const label = el.timerLabel.value.trim();
         const duration = normalizeDuration(
-          el.timerHours.value,
-          el.timerMinutes.value,
-          el.timerSeconds.value,
+          el.timerHours.value || 0,
+          el.timerMinutes.value || 0,
+          el.timerSeconds.value || 0,
         );
 
         if (duration <= 0) {
@@ -88,9 +95,25 @@ export class UIManager {
         this.bus.emit("time-entry:close");
 
         el.timerForm.reset();
-        el.timerHours.value = 0;
-        el.timerMinutes.value = 5;
-        el.timerSeconds.value = 0;
+        el.timerHours.value = "";
+        el.timerMinutes.value = "";
+        el.timerSeconds.value = "";
+      });
+    }
+
+    if (el.timePresetButtons && el.timePresetButtons.length > 0) {
+      el.timePresetButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const totalSeconds = Number(button.dataset.presetSeconds || 0);
+
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          el.timerHours.value = hours > 0 ? String(hours) : "";
+          el.timerMinutes.value = minutes > 0 ? String(minutes) : "";
+          el.timerSeconds.value = seconds > 0 ? String(seconds) : "";
+        });
       });
     }
 
@@ -131,6 +154,10 @@ export class UIManager {
         this.bus.emit("ui:buzzer-toggle", event.target.checked);
       });
     }
+
+    window.addEventListener("resize", () => {
+      this.fitTimerText();
+    });
   }
 
   renderPresets() {
@@ -207,25 +234,32 @@ export class UIManager {
 
     if (!timers.length) {
       this.elements.heroQueue.innerHTML = `
-        <div class="hero-timer-chip">
+        <div class="hero-timer-chip placeholder">
           <div class="hero-chip-index">Sequence</div>
           <div class="hero-chip-label">No timers added</div>
-          <div class="hero-chip-time">Use the + button to build a sequence</div>
         </div>
       `;
       return;
     }
 
     this.elements.heroQueue.innerHTML = timers
-      .map(
-        (timer, index) => `
-          <div class="hero-timer-chip ${index === currentIndex ? "active" : ""}">
+      .map((timer, index) => {
+        let stateClass = "";
+
+        if (index < currentIndex) {
+          stateClass = "completed";
+        } else if (index === currentIndex) {
+          stateClass = "active";
+        }
+
+        return `
+          <div class="hero-timer-chip ${stateClass}">
             <div class="hero-chip-index">Timer ${index + 1}</div>
             <div class="hero-chip-label">${this.escape(timer.label)}</div>
             <div class="hero-chip-time">${formatSecondsToClock(timer.duration)}</div>
           </div>
-        `,
-      )
+        `;
+      })
       .join("");
   }
 
@@ -238,6 +272,7 @@ export class UIManager {
       this.elements.mainTimer.textContent = formatSecondsToClock(
         remaining ?? 0,
       );
+      this.fitTimerText();
     }
 
     if (this.elements.subStatus) {
@@ -248,10 +283,20 @@ export class UIManager {
     }
 
     if (this.elements.progressBar) {
-      this.elements.progressBar.style.width = `${Math.max(
-        0,
-        Math.min(100, progress || 0),
-      )}%`;
+      const safeProgress = Math.max(0, Math.min(100, progress || 0));
+      this.elements.progressBar.style.width = `${safeProgress}%`;
+
+      let progressColor = "#39ff14";
+
+      if (safeProgress <= 10) {
+        progressColor = "#ff4d4d";
+      } else if (safeProgress <= 30) {
+        progressColor = "#ffd60a";
+      } else if (safeProgress <= 50) {
+        progressColor = "#4da6ff";
+      }
+
+      this.elements.progressBar.style.background = progressColor;
     }
   }
 
@@ -307,6 +352,44 @@ export class UIManager {
     if (this.elements.heroQueue) {
       this.renderHeroQueue([], 0);
     }
+  }
+
+  fitTimerText() {
+    const timerEl = this.elements.mainTimer;
+    const stageEl =
+      timerEl?.closest(".timer-stage-large") ||
+      timerEl?.closest(".timer-stage");
+
+    if (!timerEl || !stageEl) return;
+
+    const stageWidth = stageEl.clientWidth;
+    const stageHeight = stageEl.clientHeight;
+
+    if (!stageWidth || !stageHeight) return;
+
+    const maxWidth = stageWidth * 0.98;
+    const maxHeight = stageHeight * 0.72;
+
+    let low = 20;
+    let high = 600;
+    let best = 20;
+
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      timerEl.style.fontSize = `${mid}px`;
+
+      const fitsWidth = timerEl.scrollWidth <= maxWidth;
+      const fitsHeight = timerEl.scrollHeight <= maxHeight;
+
+      if (fitsWidth && fitsHeight) {
+        best = mid;
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    timerEl.style.fontSize = `${best}px`;
   }
 
   escape(value) {

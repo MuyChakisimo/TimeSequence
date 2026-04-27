@@ -73,8 +73,8 @@
               <input
                 id="timerLabel"
                 type="text"
-                placeholder="Example: Warm Up"
                 maxlength="40"
+                autocomplete="off"
               />
             </label>
 
@@ -86,7 +86,7 @@
                   type="number"
                   min="0"
                   max="23"
-                  value="0"
+                  inputmode="numeric"
                 />
               </label>
 
@@ -97,7 +97,7 @@
                   type="number"
                   min="0"
                   max="59"
-                  value="5"
+                  inputmode="numeric"
                 />
               </label>
 
@@ -108,9 +108,57 @@
                   type="number"
                   min="0"
                   max="59"
-                  value="0"
+                  inputmode="numeric"
                 />
               </label>
+            </div>
+
+            <div class="time-presets">
+              <!-- Seconds -->
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="15"
+              >
+                15s
+              </button>
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="30"
+              >
+                30s
+              </button>
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="60"
+              >
+                1 min
+              </button>
+
+              <!-- Existing -->
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="300"
+              >
+                5 min
+              </button>
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="1800"
+              >
+                30 min
+              </button>
+              <button
+                type="button"
+                class="time-preset-button"
+                data-preset-seconds="3600"
+              >
+                1 hr
+              </button>
             </div>
 
             <div class="modal-actions">
@@ -200,13 +248,13 @@
           </div>
         </section>
 
-        <!-- SEQUENCE (20%) -->
+        <!-- SEQUENCE -->
         <section class="sequence-strip-wrap">
           <div class="sequence-header">Sequence</div>
           <div id="heroQueue" class="hero-queue compact"></div>
         </section>
 
-        <!-- TIMER (65%) -->
+        <!-- TIMER -->
         <section class="timer-stage timer-stage-large">
           <div id="currentLabel" class="current-label">No Timer Loaded</div>
 
@@ -217,7 +265,7 @@
           </div>
         </section>
 
-        <!-- PROGRESS (5%) -->
+        <!-- PROGRESS -->
         <section class="progress-wrap">
           <div class="progress-track">
             <div id="progressBar" class="progress-bar"></div>

@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.78);
+  background: rgba(0, 0, 0, 0.82);
 }
 
 .modal-overlay.hidden {
@@ -14,8 +14,8 @@
 
 .modal-window {
   width: min(520px, 92vw);
-  border: 1px solid rgba(57, 255, 20, 0.16);
-  background: #050505;
+  border: 1px solid rgba(57, 255, 20, 0.14);
+  background: #040404;
   box-shadow:
     0 0 24px rgba(0, 0, 0, 0.6),
     inset 0 0 0 1px rgba(57, 255, 20, 0.04);
@@ -26,19 +26,80 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: #b9ffb9;
-  font-size: 1.1rem;
-  letter-spacing: 0.04em;
+  color: #a8ffa8;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .modal-form {
+  display: grid;
   gap: 16px;
 }
+
+/* INPUTS */
+
+.timer-form input {
+  padding: 10px 12px;
+  border: 1px solid rgba(57, 255, 20, 0.14);
+  background: #0a0a0a;
+  color: #cfffcc;
+  border-radius: 0;
+  outline: none;
+}
+
+.timer-form input:focus {
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+/* TIME INPUT ROW */
+
+.time-input-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.time-input-row label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: rgba(92, 255, 135, 0.75);
+}
+
+/* PRESET BUTTONS */
+
+.time-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.time-preset-button {
+  border: 1px solid rgba(57, 255, 20, 0.14);
+  background: #0a0a0a;
+  color: #8fff8f;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.time-preset-button:hover {
+  background: #141414;
+}
+
+.time-preset-button:active {
+  background: #060606;
+}
+
+/* ACTIONS */
 
 .modal-actions {
   display: flex;
@@ -59,10 +120,20 @@
   background: #1a1a1a;
 }
 
+.secondary-modal-button:active {
+  background: #060606;
+}
+
+/* MOBILE */
+
 @media (max-width: 640px) {
   .modal-window {
     width: min(94vw, 520px);
     padding: 14px;
+  }
+
+  .time-input-row {
+    grid-template-columns: 1fr;
   }
 
   .modal-actions {

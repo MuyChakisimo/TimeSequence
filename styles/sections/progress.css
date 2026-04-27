@@ -1,3 +1,7 @@
+/* =========================
+   PROGRESS BAR AREA
+========================= */
+
 .progress-wrap {
   min-height: 0;
   display: flex;
@@ -5,29 +9,45 @@
   padding: 0 2px 6px;
 }
 
+/* Track */
 .progress-track {
   width: 100%;
-  height: 14px;
-  border-radius: 999px;
+  height: 16px;
   background: #050505;
   overflow: hidden;
-  border: 1px solid rgba(57, 255, 20, 0.15);
-  box-shadow: inset 0 0 8px rgba(57, 255, 20, 0.05);
+  border: 1px solid rgba(57, 255, 20, 0.12);
+  border-radius: 0;
+  box-shadow: inset 0 0 6px rgba(57, 255, 20, 0.04);
 }
 
+/* Bar
+   Color is controlled by JS now
+   Width shrinks smoothly */
 .progress-bar {
-  width: 0%;
+  width: 100%;
   height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #1aff00, #72ff5c);
-  box-shadow:
-    0 0 8px rgba(57, 255, 20, 0.35),
-    0 0 18px rgba(57, 255, 20, 0.18);
-  transition: width 0.2s linear;
+  border-radius: 0;
+  background: #39ff14;
+  transition:
+    width 0.08s linear,
+    background 0.2s linear;
+  box-shadow: none;
 }
 
+/* Tablet */
+@media (max-width: 900px) {
+  .progress-track {
+    height: 14px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 640px) {
   .progress-track {
     height: 12px;
+  }
+
+  .progress-wrap {
+    padding: 0 1px 4px;
   }
 }

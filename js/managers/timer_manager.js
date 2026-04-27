@@ -11,7 +11,7 @@ export class TimerManager {
   }
 
   init() {
-    this.worker = new Worker("./js/workers/ticker-worker.js", {
+    this.worker = new Worker("./js/workers/ticker_worker.js", {
       type: "module",
     });
 
@@ -21,19 +21,17 @@ export class TimerManager {
       if (type === "tick") {
         this.remaining = payload.remaining;
 
-        if (this.remaining > 0) {
+        if (this.remaining > 0 && this.running) {
           this.paused = false;
         }
+
+        const remainingMs = payload.remainingMs;
+        const durationMs = payload.durationMs;
 
         this.bus.emit("timer:tick", {
           remaining: this.remaining,
           duration: this.currentDuration,
-          progress:
-            this.currentDuration > 0
-              ? ((this.currentDuration - this.remaining) /
-                  this.currentDuration) *
-                100
-              : 0,
+          progress: durationMs > 0 ? (remainingMs / durationMs) * 100 : 0,
         });
       }
 
@@ -41,6 +39,13 @@ export class TimerManager {
         this.running = false;
         this.paused = false;
         this.remaining = 0;
+
+        this.bus.emit("timer:tick", {
+          remaining: 0,
+          duration: this.currentDuration,
+          progress: 0,
+        });
+
         this.bus.emit("timer:completed");
       }
     };
@@ -65,6 +70,7 @@ export class TimerManager {
 
     this.running = false;
     this.paused = this.remaining > 0;
+
     this.worker.postMessage({ type: "pause" });
 
     this.logger.info("Timer paused", { remaining: this.remaining });
@@ -78,10 +84,16 @@ export class TimerManager {
 
     this.worker.postMessage({
       type: "resume",
-      payload: { remaining: this.remaining },
+      payload: {
+        remaining: this.remaining,
+        fullDuration: this.currentDuration,
+      },
     });
 
-    this.logger.info("Timer resumed", { remaining: this.remaining });
+    this.logger.info("Timer resumed", {
+      remaining: this.remaining,
+      fullDuration: this.currentDuration,
+    });
   }
 
   reset(duration) {
@@ -95,7 +107,7 @@ export class TimerManager {
     this.bus.emit("timer:tick", {
       remaining: duration,
       duration,
-      progress: 0,
+      progress: 100,
     });
 
     this.logger.info("Timer reset", { duration });

@@ -1,15 +1,20 @@
+/* =========================
+   TIMER AREA (70% HEIGHT)
+========================= */
+
 .timer-stage,
 .timer-stage-large {
   min-height: 0;
   display: grid;
   place-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 6px;
   overflow: hidden;
   padding: 0;
   position: relative;
 }
 
+/* Layer control */
 .current-label,
 .main-timer,
 .giant-timer,
@@ -18,60 +23,55 @@
   z-index: 1;
 }
 
+/* =========================
+   LABEL
+========================= */
+
 .current-label {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  color: rgba(92, 255, 135, 0.82);
-  letter-spacing: 0.1em;
+  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+  color: rgba(92, 255, 135, 0.7);
+  letter-spacing: 0.12em;
   font-weight: 700;
   text-transform: uppercase;
 }
 
+/* =========================
+   MAIN TIMER
+========================= */
+
 .main-timer,
 .giant-timer {
-  font-size: clamp(5.8rem, 19vw, 15rem);
-  line-height: 0.86;
+  /* JS will overwrite this dynamically */
+  font-size: 10rem;
+  line-height: 0.8;
   font-weight: 900;
-  letter-spacing: 0.03em;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   color: #39ff14;
   text-shadow:
-    0 0 4px rgba(57, 255, 20, 0.45),
-    0 0 12px rgba(57, 255, 20, 0.35),
-    0 0 26px rgba(57, 255, 20, 0.2);
+    0 0 6px rgba(57, 255, 20, 0.35),
+    0 0 14px rgba(57, 255, 20, 0.2);
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
 }
+
+/* =========================
+   STATUS TEXT
+========================= */
 
 .sub-status {
-  color: rgba(92, 255, 135, 0.55);
-  font-size: clamp(0.92rem, 1.4vw, 1.02rem);
-  letter-spacing: 0.04em;
+  color: rgba(92, 255, 135, 0.5);
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  letter-spacing: 0.05em;
 }
 
-@media (max-width: 900px) {
-  .main-timer,
-  .giant-timer {
-    font-size: clamp(4.8rem, 19vw, 11rem);
-  }
-}
-
-@media (max-width: 640px) {
+@media (max-width: 767px) and (orientation: portrait) {
   .current-label {
-    font-size: clamp(0.88rem, 3vw, 1.05rem);
-  }
-
-  .main-timer,
-  .giant-timer {
-    font-size: clamp(4.2rem, 20vw, 7.4rem);
-    letter-spacing: 0.01em;
+    font-size: clamp(0.75rem, 3vw, 1rem);
   }
 
   .sub-status {
-    font-size: 0.8rem;
-  }
-}
-
-@media (max-height: 700px) {
-  .main-timer,
-  .giant-timer {
-    font-size: clamp(4rem, 16vw, 9rem);
+    font-size: 0.75rem;
   }
 }

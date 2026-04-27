@@ -1,12 +1,12 @@
-import { EventBus } from "./core/event-bus.js";
+import { EventBus } from "./core/event_bus.js";
 import { Logger } from "./core/logger.js";
-import { StorageManager } from "./managers/storage-manager.js";
-import { AudioManager } from "./managers/audio-manager.js";
-import { PresetManager } from "./managers/preset-manager.js";
-import { SequenceManager } from "./managers/sequence-manager.js";
-import { TimerManager } from "./managers/timer-manager.js";
-import { UIManager } from "./managers/ui-manager.js";
-import { AppManager } from "./managers/app-manager.js";
+import { StorageManager } from "./managers/storage_manager.js";
+import { AudioManager } from "./managers/audio_manager.js";
+import { PresetManager } from "./managers/preset_manager.js";
+import { SequenceManager } from "./managers/sequence_manager.js";
+import { TimerManager } from "./managers/timer_manager.js";
+import { UIManager } from "./managers/ui_manager.js";
+import { AppManager } from "./managers/app_manager.js";
 import { TimeEntryManager } from "./managers/time_entry_manager.js";
 import { TimeEntry } from "./time_entry/time_entry.js";
 

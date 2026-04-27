@@ -66,6 +66,7 @@ export class AppManager {
       const preset = this.presets
         .getPresets()
         .find((item) => item.id === presetId);
+
       if (!preset) return;
 
       this.timer.stop();
@@ -112,10 +113,12 @@ export class AppManager {
 
       this.timer.stop();
       this.sequence.resetSequencePosition();
+      this.ui.setIdleDisplay();
       this.refreshUI();
     });
 
     this.bus.on("timer:stopped", () => {
+      this.ui.setIdleDisplay();
       this.refreshUI();
     });
   }
@@ -157,8 +160,10 @@ export class AppManager {
         : current.duration;
 
     const duration = current.duration;
-    const progress =
-      duration > 0 ? ((duration - remaining) / duration) * 100 : 0;
+
+    /* Full-to-empty progress:
+       100% at start, 0% at end */
+    const progress = duration > 0 ? (remaining / duration) * 100 : 0;
 
     this.ui.updateMainDisplay({
       label: current.label,

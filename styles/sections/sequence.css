@@ -1,128 +1,170 @@
-.top-control-bar {
-  display: grid;
-  grid-template-columns: 64px 1fr 64px;
-  align-items: center;
-  gap: 12px;
+/* =========================
+   SEQUENCE STRIP (10% HEIGHT)
+========================= */
+
+.sequence-strip-wrap {
   min-height: 0;
-  padding-top: max(8px, env(safe-area-inset-top));
-}
-
-.left-controls,
-.right-controls {
   display: flex;
-  align-items: center;
-}
-
-.left-controls {
-  justify-content: flex-start;
-}
-
-.right-controls {
-  justify-content: flex-end;
-}
-
-.center-controls {
-  display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
-  min-width: 0;
+  overflow: hidden;
+  padding: 2px 0 0;
 }
 
-.icon-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  border: 1px solid rgba(57, 255, 20, 0.22);
-  background: #050505;
-  color: var(--accent);
-  cursor: pointer;
-  font-size: 1.3rem;
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.1);
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease;
-}
-
-.control-button,
-.primary-button {
-  border: 1px solid rgba(57, 255, 20, 0.22);
-  border-radius: 10px;
-  padding: 10px 16px;
-  background: #050505;
-  color: var(--accent);
-  cursor: pointer;
-  white-space: nowrap;
-  box-shadow: 0 0 10px rgba(57, 255, 20, 0.08);
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
-}
-
-.primary-button {
-  background: #081308;
-  color: #9dff9d;
+/* Header */
+.sequence-header {
+  font-size: 0.7rem;
   font-weight: 700;
+  color: rgba(92, 255, 135, 0.7);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
 }
 
-.danger-button {
-  border-color: rgba(255, 77, 77, 0.3);
-  color: #ff7a7a;
-  background: #100404;
+/* Container: FORCE HORIZONTAL */
+.hero-queue,
+.hero-queue.compact {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap; /* prevents vertical stacking */
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding: 2px 0 6px;
+  scrollbar-width: thin;
+  min-height: 0;
 }
 
-.icon-button:hover,
-.control-button:hover,
-.primary-button:hover {
-  transform: translateY(-1px);
+/* Scrollbar (optional polish) */
+.hero-queue::-webkit-scrollbar {
+  height: 6px;
+}
+
+.hero-queue::-webkit-scrollbar-thumb {
+  background: rgba(57, 255, 20, 0.15);
+}
+
+/* =========================
+   TIMER CHIP
+========================= */
+
+.hero-timer-chip {
+  flex: 0 0 auto; /* prevents stretching */
+  min-width: 110px;
+  max-width: 140px;
+
+  border-radius: 0;
+  border: 1px solid rgba(57, 255, 20, 0.12);
+  background: #040404;
+
+  padding: 6px 8px;
+  box-shadow: none;
+  opacity: 1;
+
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+}
+
+/* ACTIVE (current timer) */
+.hero-timer-chip.active {
   border-color: rgba(57, 255, 20, 0.45);
-  box-shadow: 0 0 16px rgba(57, 255, 20, 0.22);
+  background: #071107;
 }
+
+/* COMPLETED (greyed out) */
+.hero-timer-chip.completed {
+  border-color: rgba(120, 120, 120, 0.2);
+  background: #0a0a0a;
+  opacity: 0.35;
+}
+
+/* PLACEHOLDER (no timers yet) */
+.hero-timer-chip.placeholder {
+  opacity: 0.4;
+  border-color: rgba(120, 120, 120, 0.2);
+  background: #0a0a0a;
+}
+
+.hero-timer-chip.placeholder .hero-chip-index,
+.hero-timer-chip.placeholder .hero-chip-label {
+  color: #777;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.hero-chip-index {
+  font-size: 0.55rem;
+  color: rgba(92, 255, 135, 0.6);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.hero-chip-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #b9ffb9;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.hero-chip-time {
+  font-size: 0.68rem;
+  color: rgba(92, 255, 135, 0.7);
+}
+
+/* Completed text override */
+.hero-timer-chip.completed .hero-chip-index,
+.hero-timer-chip.completed .hero-chip-label,
+.hero-timer-chip.completed .hero-chip-time {
+  color: #7a7a7a;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media (max-width: 900px) {
-  .top-control-bar {
-    grid-template-columns: 56px 1fr 56px;
-    gap: 8px;
+  .hero-timer-chip {
+    min-width: 95px;
+    max-width: 120px;
+    padding: 6px 7px;
   }
 
-  .control-button,
-  .primary-button {
-    padding: 9px 12px;
-    font-size: 0.92rem;
-  }
-
-  .icon-button {
-    width: 44px;
-    height: 44px;
-    font-size: 1.15rem;
+  .hero-chip-label {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 640px) {
-  .top-control-bar {
-    grid-template-columns: 46px 1fr 46px;
+  .sequence-header {
+    font-size: 0.6rem;
+    margin-bottom: 4px;
+  }
+
+  .hero-queue {
     gap: 6px;
   }
 
-  .center-controls {
-    gap: 5px;
+  .hero-timer-chip {
+    min-width: 85px;
+    max-width: 110px;
+    padding: 5px 6px;
   }
 
-  .control-button,
-  .primary-button {
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    border-radius: 8px;
+  .hero-chip-index {
+    font-size: 0.5rem;
   }
 
-  .icon-button {
-    width: 40px;
-    height: 40px;
-    font-size: 1rem;
-    border-radius: 8px;
+  .hero-chip-label {
+    font-size: 0.65rem;
+  }
+
+  .hero-chip-time {
+    font-size: 0.6rem;
   }
 }

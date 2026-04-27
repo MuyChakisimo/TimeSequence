@@ -1,6 +1,6 @@
 let intervalId = null;
 let targetEndTime = 0;
-let remainingSeconds = 0;
+let totalDurationMs = 0;
 
 function stopTicker() {
   if (intervalId) {
@@ -9,41 +9,42 @@ function stopTicker() {
   }
 }
 
-function startTicker(seconds) {
+function startTicker(seconds, fullDurationSeconds = seconds) {
   stopTicker();
-  remainingSeconds = seconds;
+
+  totalDurationMs = fullDurationSeconds * 1000;
   targetEndTime = Date.now() + seconds * 1000;
 
-  postMessage({
-    type: "tick",
-    payload: { remaining: remainingSeconds },
-  });
-
   intervalId = setInterval(() => {
-    const diffMs = targetEndTime - Date.now();
-    remainingSeconds = Math.max(0, Math.ceil(diffMs / 1000));
+    const now = Date.now();
+    const remainingMs = Math.max(0, targetEndTime - now);
+    const remainingSeconds = Math.ceil(remainingMs / 1000);
 
     postMessage({
       type: "tick",
-      payload: { remaining: remainingSeconds },
+      payload: {
+        remaining: remainingSeconds,
+        remainingMs,
+        durationMs: totalDurationMs,
+      },
     });
 
-    if (remainingSeconds <= 0) {
+    if (remainingMs <= 0) {
       stopTicker();
       postMessage({ type: "done" });
     }
-  }, 200);
+  }, 50);
 }
 
 self.onmessage = (event) => {
   const { type, payload } = event.data;
 
   if (type === "start") {
-    startTicker(payload.duration);
+    startTicker(payload.duration, payload.duration);
   }
 
   if (type === "resume") {
-    startTicker(payload.remaining);
+    startTicker(payload.remaining, payload.fullDuration);
   }
 
   if (type === "pause") {
