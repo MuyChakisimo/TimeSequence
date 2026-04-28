@@ -5,6 +5,7 @@
   gap: 12px;
   min-height: 0;
   padding-top: max(8px, env(safe-area-inset-top));
+  margin-bottom: 6px;
 }
 
 .left-controls,
@@ -260,6 +261,7 @@
   .top-control-bar {
     grid-template-columns: 50px 1fr 50px;
     gap: 4px;
+    padding-top: max(10px, env(safe-area-inset-top));
   }
 
   .icon-button {

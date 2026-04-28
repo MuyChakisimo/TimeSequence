@@ -1,10 +1,11 @@
 .preset-editor-overlay {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 45;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: calc(20px + env(safe-area-inset-top)) 20px
+    calc(20px + env(safe-area-inset-bottom)) 20px;
   background: rgba(0, 0, 0, 0.84);
 }
 
