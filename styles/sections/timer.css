@@ -28,10 +28,10 @@
 ========================= */
 
 .current-label {
-  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
-  color: rgba(92, 255, 135, 0.7);
+  font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+  color: rgba(92, 255, 135, 0.8);
   letter-spacing: 0.12em;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -42,7 +42,7 @@
 .main-timer,
 .giant-timer {
   font-size: 10rem;
-  line-height: 0.8;
+  line-height: 0.82;
   font-weight: 900;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -53,6 +53,8 @@
   white-space: nowrap;
   display: inline-block;
   max-width: 100%;
+  transform: scaleY(1.5);
+  transform-origin: center;
 }
 
 .colon {
@@ -73,7 +75,7 @@
 
 @media (max-width: 767px) and (orientation: portrait) {
   .current-label {
-    font-size: clamp(0.75rem, 3vw, 1rem);
+    font-size: clamp(0.9rem, 3.2vw, 1.2rem);
   }
 
   .sub-status {

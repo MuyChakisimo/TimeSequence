@@ -1,4 +1,4 @@
-const CACHE_NAME = "timesequence-v4.0.3";
+const CACHE_NAME = "timesequence-v4.0.4";
 
 const APP_SHELL = [
   "./",

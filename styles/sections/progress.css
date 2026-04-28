@@ -12,7 +12,7 @@
 /* Track */
 .progress-track {
   width: 100%;
-  height: 16px;
+  height: 50px;
   background: #050505;
   overflow: hidden;
   border: 1px solid rgba(57, 255, 20, 0.12);
@@ -37,14 +37,14 @@
 /* Tablet */
 @media (max-width: 900px) {
   .progress-track {
-    height: 14px;
+    height: 38px;
   }
 }
 
 /* Mobile */
 @media (max-width: 640px) {
   .progress-track {
-    height: 12px;
+    height: 30px;
   }
 
   .progress-wrap {
