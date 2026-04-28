@@ -23,6 +23,8 @@ export class UIManager {
       sideMenu: document.getElementById("sideMenu"),
       menuBackdrop: document.getElementById("menuBackdrop"),
       updateAppButton: document.getElementById("updateAppButton"),
+      checkUpdateButton: document.getElementById("checkUpdateButton"),
+      updateAppButton: document.getElementById("updateAppButton"),
 
       startButton: document.getElementById("startButton"),
       pauseButton: document.getElementById("pauseButton"),
@@ -109,6 +111,18 @@ export class UIManager {
     if (el.updateAppButton) {
       el.updateAppButton.addEventListener("click", () => {
         window.location.reload();
+      });
+    }
+
+    if (el.checkUpdateButton) {
+      el.checkUpdateButton.addEventListener("click", () => {
+        this.bus.emit("app:check-update");
+      });
+    }
+
+    if (el.updateAppButton) {
+      el.updateAppButton.addEventListener("click", () => {
+        this.bus.emit("app:apply-update");
       });
     }
 
@@ -233,6 +247,8 @@ export class UIManager {
       this.fitTimerText();
     });
   }
+
+  /* HELPERS */
 
   getTotalDuration(timers = []) {
     return timers.reduce((sum, timer) => sum + (timer.duration || 0), 0);
@@ -500,5 +516,20 @@ export class UIManager {
     const div = document.createElement("div");
     div.textContent = value;
     return div.innerHTML;
+  }
+
+  showUpdateAvailable(show = true) {
+    if (!this.elements.updateAppButton) return;
+    this.elements.updateAppButton.classList.toggle("hidden", !show);
+  }
+
+  setCheckUpdateBusy(isBusy) {
+    if (!this.elements.checkUpdateButton) return;
+
+    this.elements.checkUpdateButton.disabled = isBusy;
+    this.elements.checkUpdateButton.classList.toggle("is-disabled", isBusy);
+    this.elements.checkUpdateButton.textContent = isBusy
+      ? "Checking..."
+      : "Check for Updates";
   }
 }

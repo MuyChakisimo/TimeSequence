@@ -53,6 +53,8 @@
   white-space: nowrap;
   display: inline-block;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
   transform: scaleY(1.5);
   transform-origin: center;
 }

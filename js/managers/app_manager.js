@@ -8,6 +8,7 @@ export class AppManager {
     this.sequence = sequence;
     this.timer = timer;
     this.ui = ui;
+    this.pendingServiceWorkerRegistration = null;
   }
 
   init() {
@@ -150,6 +151,55 @@ export class AppManager {
     this.bus.on("timer:stopped", () => {
       this.ui.setIdleDisplay();
       this.refreshUI();
+    });
+
+    this.bus.on("app:check-update", async () => {
+      if (!("serviceWorker" in navigator)) return;
+
+      this.ui.setCheckUpdateBusy(true);
+
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+
+        if (!registration) {
+          this.ui.setCheckUpdateBusy(false);
+          return;
+        }
+
+        await registration.update();
+
+        setTimeout(() => {
+          if (registration.waiting) {
+            this.ui.showUpdateAvailable(true);
+          }
+
+          this.ui.setCheckUpdateBusy(false);
+        }, 1200);
+      } catch (error) {
+        console.error("Update check failed:", error);
+        this.ui.setCheckUpdateBusy(false);
+      }
+    });
+
+    this.bus.on("app:apply-update", async () => {
+      if (this.timer.isRunning() || this.timer.isPaused()) {
+        alert("Please stop or finish the timer before updating.");
+        return;
+      }
+
+      if (!("serviceWorker" in navigator)) return;
+
+      try {
+        const registration = await navigator.serviceWorker.getRegistration();
+
+        if (!registration || !registration.waiting) {
+          return;
+        }
+
+        window.location.reload();
+      } catch (error) {
+        console.error("Failed to apply update:", error);
+      }
     });
   }
 
