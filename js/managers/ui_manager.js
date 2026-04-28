@@ -469,12 +469,14 @@ export class UIManager {
 
     if (!stageWidth || !stageHeight) return;
 
-    const maxWidth = stageWidth * 0.98;
-    const maxHeight = stageHeight * 0.72;
+    const isTinyScreen = window.innerWidth <= 380;
 
-    let low = 20;
+    const maxWidth = stageWidth * (isTinyScreen ? 0.94 : 0.98);
+    const maxHeight = stageHeight * (isTinyScreen ? 0.68 : 0.72);
+
+    let low = isTinyScreen ? 14 : 20;
     let high = 600;
-    let best = 20;
+    let best = isTinyScreen ? 14 : 20;
 
     while (low <= high) {
       const mid = Math.floor((low + high) / 2);

@@ -180,3 +180,43 @@
     font-size: 0.6rem;
   }
 }
+
+/* SMALLER PHONE */
+
+@media (max-width: 380px) {
+  .sequence-strip-wrap {
+    padding: 2px 0 0;
+  }
+
+  .sequence-header {
+    font-size: 0.52rem;
+    margin-bottom: 3px;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-queue,
+  .hero-queue.compact {
+    gap: 4px;
+    padding: 1px 0 4px;
+  }
+
+  .hero-timer-chip {
+    min-width: 72px;
+    max-width: 88px;
+    padding: 4px 5px;
+  }
+
+  .hero-chip-index {
+    font-size: 0.42rem;
+    margin-bottom: 2px;
+  }
+
+  .hero-chip-label {
+    font-size: 0.52rem;
+    margin-bottom: 2px;
+  }
+
+  .hero-chip-time {
+    font-size: 0.5rem;
+  }
+}

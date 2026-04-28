@@ -82,3 +82,17 @@
     font-size: 0.75rem;
   }
 }
+
+/* SMALLER PHONE */
+
+@media (max-width: 380px) {
+  .current-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+  }
+
+  .sub-status {
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+  }
+}

@@ -299,3 +299,40 @@
 .boombox-button.is-active .btn-label {
   text-shadow: 0 0 8px currentColor;
 }
+
+/* SMALLER PHONES */
+
+@media (max-width: 380px) {
+  .top-control-bar {
+    grid-template-columns: 40px 1fr 40px;
+    gap: 3px;
+    margin-bottom: 4px;
+  }
+
+  .icon-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .boombox-controls {
+    height: 54px;
+    border-width: 2px;
+  }
+
+  .boombox-button {
+    gap: 3px;
+    border-right-width: 2px;
+  }
+
+  .btn-icon {
+    font-size: 0.85rem;
+  }
+
+  .btn-label {
+    font-size: 0.42rem;
+    letter-spacing: 0.04em;
+  }
+}
