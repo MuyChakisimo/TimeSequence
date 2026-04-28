@@ -3,7 +3,8 @@
   top: 0;
   bottom: 0;
   width: min(370px, 92vw);
-  padding: 18px;
+  padding: calc(18px + env(safe-area-inset-top)) 18px
+    calc(18px + env(safe-area-inset-bottom)) 18px;
   background: #030303;
   border-right: 1px solid rgba(57, 255, 20, 0.14);
   box-shadow: 0 0 24px rgba(57, 255, 20, 0.06);
@@ -182,9 +183,21 @@
   display: none;
 }
 
+/* Mobile */
+
 @media (max-width: 640px) {
   .side-panel {
     width: min(320px, 94vw);
-    padding: 14px;
+    padding: calc(14px + env(safe-area-inset-top)) 14px
+      calc(14px + env(safe-area-inset-bottom)) 14px;
+  }
+
+  .menu-footer {
+    gap: 6px;
+  }
+
+  .menu-version,
+  .menu-update-button {
+    font-size: 0.68rem;
   }
 }
