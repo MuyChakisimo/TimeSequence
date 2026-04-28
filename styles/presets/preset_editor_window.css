@@ -168,6 +168,8 @@
   background: transparent;
 }
 
+/* MOBILE */
+
 @media (max-width: 640px) {
   .preset-editor-window {
     width: min(96vw, 700px);
@@ -175,19 +177,41 @@
   }
 
   .preset-row-time-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
   }
 
-  .preset-timer-row-top {
-    flex-direction: column;
-    align-items: stretch;
+  .preset-row-label {
+    gap: 4px;
+    font-size: 0.68rem;
+  }
+
+  .preset-row-time-grid input {
+    padding: 8px 10px;
+    text-align: center;
+  }
+
+  .preset-row-add-button,
+  .preset-editor-secondary-button,
+  .preset-editor-primary-button,
+  .preset-editor-danger-button {
+    padding: 8px 10px;
+    font-size: 0.78rem;
+    white-space: nowrap;
   }
 
   .preset-editor-actions {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    align-items: stretch;
   }
 
   .preset-editor-actions-right {
-    flex-direction: column;
+    display: contents;
+  }
+
+  .preset-row-add-button {
+    width: auto;
   }
 }

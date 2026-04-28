@@ -133,16 +133,33 @@
   }
 
   .time-input-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .time-input-row label {
+    gap: 4px;
+    font-size: 0.68rem;
+  }
+
+  .time-input-row input {
+    padding: 8px 10px;
+    text-align: center;
   }
 
   .modal-actions {
-    flex-direction: column;
+    justify-content: flex-end;
   }
 
   .secondary-modal-button,
   .modal-actions .primary-button {
-    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  .modal-actions .primary-button {
+    width: auto;
+    min-width: 120px;
   }
 }
 
