@@ -42,6 +42,25 @@ export class AppManager {
       this.refreshUI();
     });
 
+    this.bus.on("ui:skip", () => {
+      const current = this.sequence.getCurrentTimer();
+      if (!current) return;
+
+      this.timer.stop();
+
+      if (this.sequence.hasNext()) {
+        this.sequence.advance();
+        const next = this.sequence.getCurrentTimer();
+        this.timer.start(next.duration);
+        this.refreshUI();
+        return;
+      }
+
+      this.sequence.resetSequencePosition();
+      this.ui.setIdleDisplay();
+      this.refreshUI();
+    });
+
     this.bus.on("ui:reset", () => {
       const current = this.sequence.getCurrentTimer();
       if (!current) return;

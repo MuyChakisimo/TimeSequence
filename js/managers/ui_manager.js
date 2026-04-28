@@ -17,14 +17,16 @@ export class UIManager {
   cache() {
     this.elements = {
       menuButton: document.getElementById("menuButton"),
-      menuBackdrop: document.getElementById("menuBackdrop"),
       addTimerButton: document.getElementById("addTimerButton"),
       addPresetButton: document.getElementById("addPresetButton"),
       closeMenuButton: document.getElementById("closeMenuButton"),
       sideMenu: document.getElementById("sideMenu"),
+      menuBackdrop: document.getElementById("menuBackdrop"),
+      updateAppButton: document.getElementById("updateAppButton"),
 
       startButton: document.getElementById("startButton"),
       pauseButton: document.getElementById("pauseButton"),
+      skipButton: document.getElementById("skipButton"),
       resetButton: document.getElementById("resetButton"),
       clearAllButton: document.getElementById("clearAllButton"),
 
@@ -104,6 +106,12 @@ export class UIManager {
       });
     }
 
+    if (el.updateAppButton) {
+      el.updateAppButton.addEventListener("click", () => {
+        window.location.reload();
+      });
+    }
+
     if (el.addTimerButton) {
       el.addTimerButton.addEventListener("click", () => {
         if (el.sideMenu) {
@@ -177,6 +185,13 @@ export class UIManager {
       el.pauseButton.addEventListener("click", () => {
         if (el.pauseButton.disabled) return;
         this.bus.emit("ui:pause");
+      });
+    }
+
+    if (el.skipButton) {
+      el.skipButton.addEventListener("click", () => {
+        if (el.skipButton.disabled) return;
+        this.bus.emit("ui:skip");
       });
     }
 
@@ -376,9 +391,20 @@ export class UIManager {
     }
   }
 
+  showUpdateAvailable(show = true) {
+    if (!this.elements.updateAppButton) return;
+
+    this.elements.updateAppButton.classList.toggle("hidden", !show);
+  }
+
   updateControlState({ hasTimers, isRunning, isPaused }) {
-    const { startButton, pauseButton, resetButton, clearAllButton } =
-      this.elements;
+    const {
+      startButton,
+      pauseButton,
+      skipButton,
+      resetButton,
+      clearAllButton,
+    } = this.elements;
 
     if (startButton) {
       startButton.disabled = !hasTimers || isRunning;
@@ -392,6 +418,12 @@ export class UIManager {
       pauseButton.setAttribute("aria-disabled", String(pauseButton.disabled));
       pauseButton.classList.toggle("is-disabled", pauseButton.disabled);
       pauseButton.classList.toggle("is-active", isPaused);
+    }
+
+    if (skipButton) {
+      skipButton.disabled = !hasTimers || (!isRunning && !isPaused);
+      skipButton.setAttribute("aria-disabled", String(skipButton.disabled));
+      skipButton.classList.toggle("is-disabled", skipButton.disabled);
     }
 
     if (resetButton) {

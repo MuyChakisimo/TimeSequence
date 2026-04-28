@@ -39,6 +39,7 @@
         class="menu-backdrop hidden"
         aria-hidden="true"
       ></div>
+
       <!-- LEFT MENU -->
       <aside id="sideMenu" class="side-panel hidden">
         <div class="panel-header">
@@ -79,6 +80,19 @@
 
           <div id="presetList" class="preset-list"></div>
         </section>
+
+        <div class="menu-footer">
+          <button
+            id="updateAppButton"
+            class="menu-update-button hidden"
+            type="button"
+            aria-label="Reload app to update"
+          >
+            New Update Available ↻
+          </button>
+
+          <div class="menu-version">V1.0</div>
+        </div>
       </aside>
 
       <!-- TIME ENTRY WINDOW -->
@@ -337,6 +351,16 @@
             </button>
 
             <button
+              id="skipButton"
+              class="control-button boombox-button btn-skip"
+              type="button"
+              aria-label="Skip"
+            >
+              <span class="btn-icon">⏭</span>
+              <span class="btn-label">SKIP</span>
+            </button>
+
+            <button
               id="resetButton"
               class="control-button boombox-button btn-reset"
               type="button"
@@ -357,6 +381,7 @@
             </button>
           </div>
 
+          <!-- ADD TIME BUTTON-->
           <div class="right-controls">
             <button
               id="addTimerButton"
@@ -399,15 +424,41 @@
 
     <script>
       if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("./service-worker.js")
-            .then(() => {
-              console.log("Service Worker registered");
-            })
-            .catch((error) => {
-              console.error("Service Worker registration failed:", error);
+        window.addEventListener("load", async () => {
+          try {
+            const registration = await navigator.serviceWorker.register(
+              "./service-worker.js",
+            );
+
+            console.log("Service Worker registered");
+
+            const showUpdateButton = () => {
+              const updateButton = document.getElementById("updateAppButton");
+              if (updateButton) {
+                updateButton.classList.remove("hidden");
+              }
+            };
+
+            if (registration.waiting) {
+              showUpdateButton();
+            }
+
+            registration.addEventListener("updatefound", () => {
+              const newWorker = registration.installing;
+              if (!newWorker) return;
+
+              newWorker.addEventListener("statechange", () => {
+                if (
+                  newWorker.state === "installed" &&
+                  navigator.serviceWorker.controller
+                ) {
+                  showUpdateButton();
+                }
+              });
             });
+          } catch (error) {
+            console.error("Service Worker registration failed:", error);
+          }
         });
       }
     </script>

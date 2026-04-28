@@ -10,6 +10,9 @@
   z-index: 20;
   overflow-y: auto;
 
+  display: flex;
+  flex-direction: column;
+
   transform: translateX(0);
   opacity: 1;
   visibility: visible;
@@ -142,6 +145,41 @@
 
 .app-shell.menu-open .main-view {
   pointer-events: none;
+}
+
+.menu-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding-top: 10px;
+}
+
+.menu-version {
+  text-align: right;
+  font-size: 0.72rem;
+  color: rgba(92, 255, 135, 0.45);
+  letter-spacing: 0.08em;
+}
+
+.menu-update-button {
+  border: 1px solid rgba(77, 166, 255, 0.2);
+  background: #081018;
+  color: #8fc8ff;
+  padding: 7px 10px;
+  cursor: pointer;
+  border-radius: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.menu-update-button:hover {
+  background: #101a24;
+}
+
+.menu-update-button.hidden {
+  display: none;
 }
 
 @media (max-width: 640px) {

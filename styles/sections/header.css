@@ -92,7 +92,7 @@
 
 .boombox-controls {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   align-items: stretch;
 
   width: 100%;
@@ -171,6 +171,10 @@
   color: #4da6ff;
 }
 
+.boombox-button.btn-skip {
+  color: #d98cff;
+}
+
 .boombox-button.btn-reset {
   color: #ff9f1a;
 }
@@ -192,6 +196,13 @@
   text-shadow:
     0 0 4px rgba(77, 166, 255, 0.55),
     0 0 10px rgba(77, 166, 255, 0.28);
+}
+
+.boombox-button.btn-skip:active .btn-icon,
+.boombox-button.btn-skip:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(217, 140, 255, 0.55),
+    0 0 10px rgba(217, 140, 255, 0.28);
 }
 
 .boombox-button.btn-reset:active .btn-icon,
