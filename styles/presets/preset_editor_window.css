@@ -77,9 +77,6 @@
 }
 
 .preset-timer-row-top {
-  display: flex;
-  align-items: end;
-  gap: 10px;
   margin-bottom: 10px;
 }
 
@@ -140,6 +137,35 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+}
+
+.preset-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.preset-input-wrap input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.preset-row-remove-inside {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.preset-row-remove-inside:hover {
+  color: #ff8f8f;
+  background: transparent;
 }
 
 @media (max-width: 640px) {

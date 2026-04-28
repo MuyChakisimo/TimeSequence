@@ -17,6 +17,7 @@ export class UIManager {
   cache() {
     this.elements = {
       menuButton: document.getElementById("menuButton"),
+      menuBackdrop: document.getElementById("menuBackdrop"),
       addTimerButton: document.getElementById("addTimerButton"),
       addPresetButton: document.getElementById("addPresetButton"),
       closeMenuButton: document.getElementById("closeMenuButton"),
@@ -34,6 +35,7 @@ export class UIManager {
 
       timerForm: document.getElementById("timerForm"),
       timerLabel: document.getElementById("timerLabel"),
+      clearLabelButton: document.getElementById("clearLabelButton"),
       timerHours: document.getElementById("timerHours"),
       timerMinutes: document.getElementById("timerMinutes"),
       timerSeconds: document.getElementById("timerSeconds"),
@@ -48,11 +50,34 @@ export class UIManager {
 
   bindUI() {
     const el = this.elements;
+    const clearBtn = el.clearLabelButton;
+
+    if (clearBtn && el.timerLabel) {
+      clearBtn.addEventListener("click", () => {
+        el.timerLabel.value = "";
+        el.timerLabel.focus();
+      });
+    }
+
+    if (clearBtn && el.timerLabel) {
+      const toggleClear = () => {
+        clearBtn.style.opacity = el.timerLabel.value ? "1" : "0.3";
+      };
+
+      el.timerLabel.addEventListener("input", toggleClear);
+      toggleClear();
+    }
 
     if (el.menuButton) {
       el.menuButton.addEventListener("click", () => {
         if (el.sideMenu) {
+          const willOpen = el.sideMenu.classList.contains("hidden");
+
           el.sideMenu.classList.toggle("hidden");
+
+          if (el.menuBackdrop) {
+            el.menuBackdrop.classList.toggle("hidden", !willOpen);
+          }
         }
       });
     }
@@ -62,6 +87,20 @@ export class UIManager {
         if (el.sideMenu) {
           el.sideMenu.classList.add("hidden");
         }
+
+        if (el.menuBackdrop) {
+          el.menuBackdrop.classList.add("hidden");
+        }
+      });
+    }
+
+    if (el.menuBackdrop) {
+      el.menuBackdrop.addEventListener("click", () => {
+        if (el.sideMenu) {
+          el.sideMenu.classList.add("hidden");
+        }
+
+        el.menuBackdrop.classList.add("hidden");
       });
     }
 
@@ -69,6 +108,10 @@ export class UIManager {
       el.addTimerButton.addEventListener("click", () => {
         if (el.sideMenu) {
           el.sideMenu.classList.add("hidden");
+        }
+
+        if (el.menuBackdrop) {
+          el.menuBackdrop.classList.add("hidden");
         }
 
         this.bus.emit("time-entry:open");
@@ -160,6 +203,16 @@ export class UIManager {
         this.bus.emit("ui:buzzer-toggle", event.target.checked);
       });
     }
+
+    this.bus.on("menu:close", () => {
+      if (el.sideMenu) {
+        el.sideMenu.classList.add("hidden");
+      }
+
+      if (el.menuBackdrop) {
+        el.menuBackdrop.classList.add("hidden");
+      }
+    });
 
     window.addEventListener("resize", () => {
       this.fitTimerText();

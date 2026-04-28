@@ -29,6 +29,57 @@
   display: contents;
 }
 
+.top-control-bar,
+.sequence-strip-wrap,
+.timer-stage,
+.timer-stage-large,
+.progress-wrap {
+  position: relative;
+}
+
+.top-control-bar::after,
+.sequence-strip-wrap::before,
+.sequence-strip-wrap::after,
+.timer-stage::before,
+.timer-stage::after,
+.timer-stage-large::before,
+.timer-stage-large::after,
+.progress-wrap::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(57, 255, 20, 0.1);
+  pointer-events: none;
+}
+
+.top-control-bar::after {
+  bottom: 0;
+}
+
+.sequence-strip-wrap::before {
+  top: 0;
+}
+
+.sequence-strip-wrap::after {
+  bottom: 0;
+}
+
+.timer-stage::before,
+.timer-stage-large::before {
+  top: 0;
+}
+
+.timer-stage::after,
+.timer-stage-large::after {
+  bottom: 0;
+}
+
+.progress-wrap::before {
+  top: 0;
+}
+
 @media (max-width: 900px) {
   .main-view {
     padding: 0 10px;

@@ -145,3 +145,38 @@
     width: 100%;
   }
 }
+
+/* Input with clear button */
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.input-clear-button {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 4px;
+  line-height: 1;
+}
+
+.input-clear-button:hover {
+  color: #ffffff;
+}
+
+.input-clear-button:active {
+  color: #8fff8f;
+}

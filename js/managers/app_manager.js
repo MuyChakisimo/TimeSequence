@@ -70,6 +70,8 @@ export class AppManager {
       this.sequence.clearAll();
       this.sequence.addTimers(preset.timers);
       this.sequence.resetSequencePosition();
+
+      this.bus.emit("menu:close");
       this.refreshUI();
     });
 

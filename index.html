@@ -21,6 +21,7 @@
 
     <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta
@@ -33,6 +34,11 @@
 
   <body>
     <div class="app-shell">
+      <div
+        id="menuBackdrop"
+        class="menu-backdrop hidden"
+        aria-hidden="true"
+      ></div>
       <!-- LEFT MENU -->
       <aside id="sideMenu" class="side-panel hidden">
         <div class="panel-header">
@@ -96,14 +102,25 @@
           </div>
 
           <form id="timerForm" class="timer-form modal-form">
-            <label>
+            <label class="input-with-clear">
               Label
-              <input
-                id="timerLabel"
-                type="text"
-                maxlength="40"
-                autocomplete="off"
-              />
+              <div class="input-wrap">
+                <input
+                  id="timerLabel"
+                  type="text"
+                  maxlength="40"
+                  autocomplete="off"
+                />
+
+                <button
+                  type="button"
+                  id="clearLabelButton"
+                  class="input-clear-button"
+                  aria-label="Clear label"
+                >
+                  ✕
+                </button>
+              </div>
             </label>
 
             <div class="time-input-row">

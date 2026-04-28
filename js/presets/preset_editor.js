@@ -33,7 +33,6 @@ export class PresetEditor {
   close() {
     if (!this.elements.modal) return;
 
-    // Move focus somewhere safe (like the + button)
     const safeFocusTarget = document.getElementById("addPresetButton");
     if (safeFocusTarget) {
       safeFocusTarget.focus();
@@ -111,10 +110,12 @@ export class PresetEditor {
 
     const index =
       this.elements.timersList.querySelectorAll(".preset-timer-row").length;
+
     this.elements.timersList.insertAdjacentHTML(
       "beforeend",
       this.getTimerRowMarkup(timer, index),
     );
+
     this.bindRowActions();
   }
 
@@ -129,38 +130,58 @@ export class PresetEditor {
         <div class="preset-timer-row-top">
           <label class="preset-row-label preset-row-label-wide">
             Title
-            <input
-              type="text"
-              class="preset-timer-title"
-              value="${this.escape(timer.label || "")}"
-              maxlength="40"
-            />
-          </label>
+            <div class="preset-input-wrap">
+              <input
+                type="text"
+                class="preset-timer-title"
+                value="${this.escape(timer.label || "")}"
+                maxlength="40"
+              />
 
-          <button
-            type="button"
-            class="preset-row-remove-button"
-            aria-label="Remove timer row"
-            title="Remove timer row"
-          >
-            ✕
-          </button>
+              <button
+                type="button"
+                class="preset-row-remove-button preset-row-remove-inside"
+                aria-label="Remove timer row"
+                title="Remove timer row"
+              >
+                ✕
+              </button>
+            </div>
+          </label>
         </div>
 
         <div class="preset-row-time-grid">
           <label class="preset-row-label">
             H
-            <input type="number" class="preset-timer-hours" min="0" max="23" value="${hours || ""}" />
+            <input
+              type="number"
+              class="preset-timer-hours"
+              min="0"
+              max="23"
+              value="${hours || ""}"
+            />
           </label>
 
           <label class="preset-row-label">
             M
-            <input type="number" class="preset-timer-minutes" min="0" max="59" value="${minutes || ""}" />
+            <input
+              type="number"
+              class="preset-timer-minutes"
+              min="0"
+              max="59"
+              value="${minutes || ""}"
+            />
           </label>
 
           <label class="preset-row-label">
             S
-            <input type="number" class="preset-timer-seconds" min="0" max="59" value="${seconds || ""}" />
+            <input
+              type="number"
+              class="preset-timer-seconds"
+              min="0"
+              max="59"
+              value="${seconds || ""}"
+            />
           </label>
         </div>
       </div>
@@ -181,6 +202,7 @@ export class PresetEditor {
 
           const rows =
             this.elements.timersList.querySelectorAll(".preset-timer-row");
+
           if (!rows.length) {
             this.addTimerRow();
           }

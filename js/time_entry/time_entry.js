@@ -24,6 +24,15 @@ export class TimeEntry {
   close() {
     if (!this.elements.modal) return;
 
+    // Move focus somewhere visible BEFORE hiding
+    const safeFocusTarget = document.getElementById("addTimerButton");
+
+    if (safeFocusTarget) {
+      safeFocusTarget.focus();
+    } else {
+      document.body.focus();
+    }
+
     this.elements.modal.classList.add("hidden");
     this.elements.modal.setAttribute("aria-hidden", "true");
   }
