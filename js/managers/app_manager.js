@@ -163,21 +163,28 @@ export class AppManager {
 
         if (!registration) {
           this.ui.setCheckUpdateBusy(false);
+          this.ui.showNoUpdateAvailable();
           return;
         }
 
         await registration.update();
 
-        setTimeout(() => {
-          if (registration.waiting) {
-            this.ui.showUpdateAvailable(true);
-          }
+        window.setTimeout(() => {
+          const hasUpdate = Boolean(registration.waiting);
 
           this.ui.setCheckUpdateBusy(false);
+
+          if (hasUpdate) {
+            this.ui.showUpdateAvailable(true);
+          } else {
+            this.ui.showUpdateAvailable(false);
+            this.ui.showNoUpdateAvailable();
+          }
         }, 1200);
       } catch (error) {
         console.error("Update check failed:", error);
         this.ui.setCheckUpdateBusy(false);
+        this.ui.showNoUpdateAvailable();
       }
     });
 

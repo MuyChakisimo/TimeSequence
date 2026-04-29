@@ -383,21 +383,35 @@ export class UIManager {
           : "Add a timer with the + button";
     }
 
-    if (this.elements.progressBar) {
+    if (this.elements.progressBar || this.elements.mainTimer) {
       const safeProgress = Math.max(0, Math.min(100, progress || 0));
-      this.elements.progressBar.style.width = `${safeProgress}%`;
 
-      let progressColor = "#39ff14";
-
-      if (safeProgress <= 10) {
-        progressColor = "#ff4d4d";
-      } else if (safeProgress <= 30) {
-        progressColor = "#ffd60a";
-      } else if (safeProgress <= 50) {
-        progressColor = "#4da6ff";
+      if (this.elements.progressBar) {
+        this.elements.progressBar.style.width = `${safeProgress}%`;
       }
 
-      this.elements.progressBar.style.background = progressColor;
+      let progressColor = "#39ff14"; // green
+
+      if (safeProgress <= 10) {
+        progressColor = "#ff4d4d"; // red
+      } else if (safeProgress <= 30) {
+        progressColor = "#ffd60a"; // yellow
+      } else if (safeProgress <= 50) {
+        progressColor = "#4da6ff"; // blue
+      }
+
+      if (this.elements.progressBar) {
+        this.elements.progressBar.style.background = progressColor;
+      }
+
+      if (this.elements.mainTimer) {
+        this.elements.mainTimer.style.color = progressColor;
+
+        this.elements.mainTimer.style.textShadow = `
+        0 0 6px ${progressColor}55,
+        0 0 14px ${progressColor}33
+        `;
+      }
     }
   }
 
@@ -531,5 +545,24 @@ export class UIManager {
     this.elements.checkUpdateButton.textContent = isBusy
       ? "Checking..."
       : "Check for Updates";
+
+    this.elements.checkUpdateButton.classList.remove("is-no-update");
+  }
+
+  showNoUpdateAvailable() {
+    if (!this.elements.checkUpdateButton) return;
+
+    const button = this.elements.checkUpdateButton;
+
+    button.disabled = true;
+    button.classList.remove("is-disabled");
+    button.classList.add("is-no-update");
+    button.textContent = "No Update Available";
+
+    window.setTimeout(() => {
+      button.disabled = false;
+      button.classList.remove("is-no-update");
+      button.textContent = "Check for Updates";
+    }, 1500);
   }
 }

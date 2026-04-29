@@ -160,7 +160,7 @@
 .menu-version {
   text-align: right;
   font-size: 0.72rem;
-  color: rgba(92, 255, 135, 0.45);
+  color: rgba(202, 123, 255, 0.658);
   letter-spacing: 0.08em;
 }
 
@@ -173,10 +173,25 @@
   border-radius: 0;
   font-size: 0.72rem;
   letter-spacing: 0.04em;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .menu-update-button:hover {
   background: #101a24;
+}
+
+#checkUpdateButton.is-no-update {
+  border-color: rgba(255, 77, 77, 0.24);
+  background: #1a0a0a;
+  color: #ff8f8f;
+}
+
+#checkUpdateButton.is-no-update:hover {
+  background: #241010;
 }
 
 .menu-update-button.hidden {
