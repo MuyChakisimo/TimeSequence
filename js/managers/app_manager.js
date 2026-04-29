@@ -8,7 +8,6 @@ export class AppManager {
     this.sequence = sequence;
     this.timer = timer;
     this.ui = ui;
-    this.pendingServiceWorkerRegistration = null;
   }
 
   init() {
@@ -71,6 +70,13 @@ export class AppManager {
     });
 
     this.bus.on("ui:clear-all", () => {
+      if (this.isTimerActive()) {
+        const confirmed = window.confirm(
+          "A timer is currently active. Clearing all will stop the current sequence. Continue?",
+        );
+        if (!confirmed) return;
+      }
+
       this.timer.stop();
       this.sequence.clearAll();
       this.ui.setIdleDisplay();
@@ -85,6 +91,13 @@ export class AppManager {
     this.bus.on("ui:load-preset", (presetId) => {
       const preset = this.presets.getPresetById(presetId);
       if (!preset) return;
+
+      if (this.isTimerActive()) {
+        const confirmed = window.confirm(
+          "A timer is currently active. Loading a preset will stop the current sequence. Continue?",
+        );
+        if (!confirmed) return;
+      }
 
       this.timer.stop();
       this.sequence.clearAll();
@@ -117,7 +130,7 @@ export class AppManager {
       this.refreshUI();
     });
 
-    this.bus.on("timer:tick", ({ remaining, duration, progress }) => {
+    this.bus.on("timer:tick", ({ remaining, progress }) => {
       const current = this.sequence.getCurrentTimer();
 
       this.ui.updateMainDisplay({
@@ -154,6 +167,13 @@ export class AppManager {
     });
 
     this.bus.on("app:check-update", async () => {
+      if (this.isTimerActive()) {
+        alert(
+          "Please stop or finish the current timer before checking for updates.",
+        );
+        return;
+      }
+
       if (!("serviceWorker" in navigator)) return;
 
       this.ui.setCheckUpdateBusy(true);
@@ -189,8 +209,8 @@ export class AppManager {
     });
 
     this.bus.on("app:apply-update", async () => {
-      if (this.timer.isRunning() || this.timer.isPaused()) {
-        alert("Please stop or finish the timer before updating.");
+      if (this.isTimerActive()) {
+        alert("Please stop or finish the current timer before updating.");
         return;
       }
 
@@ -220,6 +240,11 @@ export class AppManager {
     });
   }
 
+  isTimerActive() {
+    const { timer } = this;
+    return timer.isRunning() || timer.isPaused();
+  }
+
   refreshUI() {
     const timers = this.sequence.getAllTimers();
     const currentIndex = this.sequence.getCurrentIndex();
@@ -247,7 +272,6 @@ export class AppManager {
         : current.duration;
 
     const duration = current.duration;
-
     const progress = duration > 0 ? (remaining / duration) * 100 : 0;
 
     this.ui.updateMainDisplay({
