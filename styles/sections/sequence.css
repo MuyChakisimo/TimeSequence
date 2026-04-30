@@ -98,10 +98,15 @@
   background: #07111a;
 }
 
-.hero-timer-chip.total-chip .hero-chip-index,
-.hero-timer-chip.total-chip .hero-chip-label,
-.hero-timer-chip.total-chip .hero-chip-time {
-  color: #8fc8ff;
+.hero-timer-chip.extra-chip {
+  border-color: rgba(255, 214, 10, 0.3);
+  background: #161205;
+}
+
+.hero-timer-chip.extra-chip .hero-chip-index,
+.hero-timer-chip.extra-chip .hero-chip-label,
+.hero-timer-chip.extra-chip .hero-chip-time {
+  color: #ffe066;
 }
 
 /* =========================

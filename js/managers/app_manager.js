@@ -8,6 +8,8 @@ export class AppManager {
     this.sequence = sequence;
     this.timer = timer;
     this.ui = ui;
+
+    this.isRunningExtraTime = false;
   }
 
   init() {
@@ -26,15 +28,35 @@ export class AppManager {
 
     this.bus.on("ui:start", () => {
       const current = this.sequence.getCurrentTimer();
-      if (!current) return;
+      const extraTimeRemaining = this.sequence.getExtraTimeRemaining();
 
       if (this.timer.isPaused()) {
         this.timer.resume();
-      } else if (!this.timer.isRunning()) {
-        this.timer.start(current.duration);
+        this.refreshUI();
+        return;
       }
 
-      this.refreshUI();
+      if (this.timer.isRunning()) {
+        this.refreshUI();
+        return;
+      }
+
+      if (current && !this.isRunningExtraTime) {
+        const duration =
+          this.timer.getRemaining() > 0
+            ? this.timer.getRemaining()
+            : current.duration;
+
+        this.timer.start(duration);
+        this.refreshUI();
+        return;
+      }
+
+      if (extraTimeRemaining > 0) {
+        this.isRunningExtraTime = true;
+        this.timer.start(extraTimeRemaining);
+        this.refreshUI();
+      }
     });
 
     this.bus.on("ui:pause", () => {
@@ -43,12 +65,32 @@ export class AppManager {
     });
 
     this.bus.on("ui:skip", () => {
+      if (this.isRunningExtraTime) {
+        this.isRunningExtraTime = false;
+        this.sequence.clearExtraTime();
+        this.timer.stop();
+        this.sequence.resetSequencePosition();
+        this.ui.setIdleDisplay();
+        this.refreshUI();
+        return;
+      }
+
       const current = this.sequence.getCurrentTimer();
       if (!current) return;
+
+      const remaining =
+        this.timer.getRemaining() > 0
+          ? this.timer.getRemaining()
+          : current.duration;
+
+      if (remaining > 0) {
+        this.sequence.addExtraTime(remaining);
+      }
 
       this.timer.stop();
 
       if (this.sequence.hasNext()) {
+        this.isRunningExtraTime = false;
         this.sequence.advance();
         const next = this.sequence.getCurrentTimer();
         this.timer.start(next.duration);
@@ -56,6 +98,16 @@ export class AppManager {
         return;
       }
 
+      const extraTimeRemaining = this.sequence.getExtraTimeRemaining();
+
+      if (extraTimeRemaining > 0) {
+        this.isRunningExtraTime = true;
+        this.timer.start(extraTimeRemaining);
+        this.refreshUI();
+        return;
+      }
+
+      this.isRunningExtraTime = false;
       this.sequence.resetSequencePosition();
       this.ui.setIdleDisplay();
       this.refreshUI();
@@ -76,6 +128,8 @@ export class AppManager {
         );
         if (!confirmed) return;
       }
+
+      this.isRunningExtraTime = false;
 
       this.timer.stop();
       this.sequence.clearAll();
@@ -98,6 +152,8 @@ export class AppManager {
         );
         if (!confirmed) return;
       }
+
+      this.isRunningExtraTime = false;
 
       this.timer.stop();
       this.sequence.clearAll();
@@ -134,12 +190,26 @@ export class AppManager {
       const current = this.sequence.getCurrentTimer();
 
       this.ui.updateMainDisplay({
-        label: current?.label || "No Timer Loaded",
+        label: this.isRunningExtraTime
+          ? "Extra Time"
+          : current?.label || "No Timer Loaded",
         remaining,
         progress,
         index: this.sequence.getCurrentIndex(),
         total: this.sequence.getAllTimers().length,
       });
+
+      this.ui.updateTotalTimeDisplay(
+        this.getTotalRemaining(),
+        this.sequence.getAllTimers().length > 0,
+        this.sequence.getAllTimers().length,
+      );
+
+      this.ui.renderHeroQueue(
+        this.sequence.getAllTimers(),
+        this.sequence.getCurrentIndex(),
+        this.getDisplayedExtraTimeRemaining(),
+      );
 
       this.refreshUIControlsOnly();
     });
@@ -147,14 +217,35 @@ export class AppManager {
     this.bus.on("timer:completed", () => {
       this.timer.buzz(this.sequence.getBuzzerEnabled());
 
+      if (this.isRunningExtraTime) {
+        this.isRunningExtraTime = false;
+        this.sequence.clearExtraTime();
+        this.timer.stop();
+        this.sequence.resetSequencePosition();
+        this.ui.setIdleDisplay();
+        this.refreshUI();
+        return;
+      }
+
       if (this.sequence.hasNext()) {
         this.sequence.advance();
         const next = this.sequence.getCurrentTimer();
+        this.isRunningExtraTime = false;
         this.timer.start(next.duration);
         this.refreshUI();
         return;
       }
 
+      const extraTimeRemaining = this.sequence.getExtraTimeRemaining();
+
+      if (extraTimeRemaining > 0) {
+        this.isRunningExtraTime = true;
+        this.timer.start(extraTimeRemaining);
+        this.refreshUI();
+        return;
+      }
+
+      this.isRunningExtraTime = false;
       this.timer.stop();
       this.sequence.resetSequencePosition();
       this.ui.setIdleDisplay();
@@ -230,6 +321,50 @@ export class AppManager {
     });
   }
 
+  /* HELPERS */
+
+  getTotalRemaining() {
+    const timers = this.sequence.getAllTimers();
+    const currentIndex = this.sequence.getCurrentIndex();
+    const current = this.sequence.getCurrentTimer();
+    const extraTimeRemaining = this.sequence.getExtraTimeRemaining();
+
+    if (this.isRunningExtraTime) {
+      return this.timer.getRemaining() > 0
+        ? this.timer.getRemaining()
+        : extraTimeRemaining;
+    }
+
+    if (!timers.length) {
+      return extraTimeRemaining;
+    }
+
+    if (!current) {
+      return extraTimeRemaining;
+    }
+
+    const currentRemaining =
+      this.timer.getRemaining() > 0
+        ? this.timer.getRemaining()
+        : current.duration;
+
+    const remainingAfterCurrent = timers
+      .slice(currentIndex + 1)
+      .reduce((sum, timer) => sum + (timer.duration || 0), 0);
+
+    return currentRemaining + remainingAfterCurrent + extraTimeRemaining;
+  }
+
+  getDisplayedExtraTimeRemaining() {
+    if (this.isRunningExtraTime) {
+      return this.timer.getRemaining() > 0
+        ? this.timer.getRemaining()
+        : this.sequence.getExtraTimeRemaining();
+    }
+
+    return this.sequence.getExtraTimeRemaining();
+  }
+
   refreshUIControlsOnly() {
     const hasTimers = !this.sequence.isEmpty();
 
@@ -251,7 +386,11 @@ export class AppManager {
     const current = this.sequence.getCurrentTimer();
 
     this.ui.renderPresets();
-    this.ui.renderHeroQueue(timers, currentIndex);
+    this.ui.renderHeroQueue(
+      timers,
+      currentIndex,
+      this.getDisplayedExtraTimeRemaining(),
+    );
     this.ui.updateBuzzer(this.sequence.getBuzzerEnabled());
 
     const hasTimers = timers.length > 0;
@@ -261,8 +400,48 @@ export class AppManager {
       isPaused: this.timer.isPaused(),
     });
 
-    if (!current) {
+    this.ui.updateTotalTimeDisplay(
+      this.getTotalRemaining(),
+      hasTimers,
+      timers.length,
+    );
+
+    if (!current && !this.isRunningExtraTime) {
+      if (this.sequence.getExtraTimeRemaining() > 0) {
+        this.ui.updateMainDisplay({
+          label: "Extra Time",
+          remaining:
+            this.timer.getRemaining() > 0
+              ? this.timer.getRemaining()
+              : this.sequence.getExtraTimeRemaining(),
+          progress: 100,
+          index: timers.length,
+          total: timers.length,
+        });
+        return;
+      }
+
       this.ui.setIdleDisplay();
+      return;
+    }
+
+    if (this.isRunningExtraTime) {
+      const extraRemaining =
+        this.timer.getRemaining() > 0
+          ? this.timer.getRemaining()
+          : this.sequence.getExtraTimeRemaining();
+
+      const extraTotal =
+        this.sequence.getExtraTimeRemaining() || extraRemaining;
+      const progress = extraTotal > 0 ? (extraRemaining / extraTotal) * 100 : 0;
+
+      this.ui.updateMainDisplay({
+        label: "Extra Time",
+        remaining: extraRemaining,
+        progress,
+        index: timers.length,
+        total: timers.length,
+      });
       return;
     }
 

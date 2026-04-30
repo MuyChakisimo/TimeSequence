@@ -8,6 +8,7 @@ export class SequenceManager {
       timers: [],
       currentIndex: 0,
       buzzerEnabled: true,
+      extraTimeRemaining: 0,
     };
   }
 
@@ -45,16 +46,19 @@ export class SequenceManager {
   moveUp(id) {
     const index = this.state.timers.findIndex((timer) => timer.id === id);
     if (index <= 0) return;
+
     [this.state.timers[index - 1], this.state.timers[index]] = [
       this.state.timers[index],
       this.state.timers[index - 1],
     ];
+
     this.persist();
   }
 
   clearAll() {
     this.state.timers = [];
     this.state.currentIndex = 0;
+    this.state.extraTimeRemaining = 0;
     this.persist();
   }
 
@@ -66,6 +70,21 @@ export class SequenceManager {
 
   setBuzzerEnabled(enabled) {
     this.state.buzzerEnabled = Boolean(enabled);
+    this.persist();
+  }
+
+  addExtraTime(seconds) {
+    const safeSeconds = Math.max(0, Math.floor(Number(seconds) || 0));
+    this.state.extraTimeRemaining += safeSeconds;
+    this.persist();
+  }
+
+  getExtraTimeRemaining() {
+    return this.state.extraTimeRemaining || 0;
+  }
+
+  clearExtraTime() {
+    this.state.extraTimeRemaining = 0;
     this.persist();
   }
 
@@ -104,6 +123,7 @@ export class SequenceManager {
       timers: this.state.timers,
       currentIndex: this.state.currentIndex,
       buzzerEnabled: this.state.buzzerEnabled,
+      extraTimeRemaining: this.state.extraTimeRemaining,
     };
   }
 

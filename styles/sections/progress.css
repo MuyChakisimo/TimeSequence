@@ -9,9 +9,24 @@
   padding: 0 2px 6px;
 }
 
-/* Track */
+.progress-row {
+  width: 100%;
+  display: grid;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-row.single-timer {
+  grid-template-columns: 1fr;
+}
+
+.progress-row.has-total-time {
+  grid-template-columns: 8.5fr 1.5fr;
+}
+
 .progress-track {
   width: 100%;
+  min-width: 0;
   height: 50px;
   background: #050505;
   overflow: hidden;
@@ -20,9 +35,6 @@
   box-shadow: inset 0 0 6px rgba(57, 255, 20, 0.04);
 }
 
-/* Bar
-   Color is controlled by JS now
-   Width shrinks smoothly */
 .progress-bar {
   width: 100%;
   height: 100%;
@@ -34,30 +46,65 @@
   box-shadow: none;
 }
 
-/* Tablet */
+.total-time-display {
+  min-width: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(57, 255, 20, 0.12);
+  background: #050505;
+  color: rgba(92, 255, 135, 0.9);
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: inset 0 0 6px rgba(57, 255, 20, 0.04);
+}
+
+.total-time-display.hidden {
+  display: none;
+}
+
 @media (max-width: 900px) {
-  .progress-track {
+  .progress-track,
+  .total-time-display {
     height: 38px;
+  }
+
+  .total-time-display {
+    font-size: 0.95rem;
   }
 }
 
-/* Mobile */
 @media (max-width: 640px) {
-  .progress-track {
+  .progress-track,
+  .total-time-display {
     height: 30px;
   }
 
   .progress-wrap {
     padding: 0 1px 4px;
   }
+
+  .progress-row {
+    gap: 8px;
+  }
+
+  .total-time-display {
+    font-size: 0.8rem;
+  }
 }
 
 @media (max-width: 380px) {
-  .progress-track {
+  .progress-track,
+  .total-time-display {
     height: 20px;
   }
 
-  .progress-wrap {
-    padding: 0 1px 3px;
+  .total-time-display {
+    font-size: 0.68rem;
   }
 }

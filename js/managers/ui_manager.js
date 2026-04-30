@@ -24,7 +24,6 @@ export class UIManager {
       menuBackdrop: document.getElementById("menuBackdrop"),
       updateAppButton: document.getElementById("updateAppButton"),
       checkUpdateButton: document.getElementById("checkUpdateButton"),
-      updateAppButton: document.getElementById("updateAppButton"),
 
       startButton: document.getElementById("startButton"),
       pauseButton: document.getElementById("pauseButton"),
@@ -36,6 +35,8 @@ export class UIManager {
       currentLabel: document.getElementById("currentLabel"),
       subStatus: document.getElementById("subStatus"),
       progressBar: document.getElementById("progressBar"),
+      progressRow: document.getElementById("progressRow"),
+      totalTimeDisplay: document.getElementById("totalTimeDisplay"),
 
       timerForm: document.getElementById("timerForm"),
       timerLabel: document.getElementById("timerLabel"),
@@ -314,7 +315,7 @@ export class UIManager {
       });
   }
 
-  renderHeroQueue(timers, currentIndex) {
+  renderHeroQueue(timers, currentIndex, extraTimeRemaining = 0) {
     if (!this.elements.heroQueue) return;
 
     if (!timers.length) {
@@ -350,14 +351,40 @@ export class UIManager {
       .join("");
 
     const totalChip = `
-      <div class="hero-timer-chip total-chip">
-        <div class="hero-chip-index">Total</div>
-        <div class="hero-chip-label">${timers.length} timer(s)</div>
-        <div class="hero-chip-time">${formatSecondsToClock(totalDuration)}</div>
-      </div>
-    `;
+  <div class="hero-timer-chip total-chip">
+    <div class="hero-chip-index">Total</div>
+    <div class="hero-chip-label">${timers.length} timer(s)</div>
+    <div class="hero-chip-time">${formatSecondsToClock(totalDuration)}</div>
+  </div>
+`;
 
-    this.elements.heroQueue.innerHTML = timerChips + totalChip;
+    const extraChip =
+      extraTimeRemaining > 0
+        ? `
+      <div class="hero-timer-chip extra-chip">
+        <div class="hero-chip-index">Extra</div>
+        <div class="hero-chip-label">Skipped time</div>
+        <div class="hero-chip-time">${formatSecondsToClock(extraTimeRemaining)}</div>
+      </div>
+    `
+        : "";
+
+    this.elements.heroQueue.innerHTML = timerChips + totalChip + extraChip;
+  }
+
+  updateTotalTimeDisplay(totalRemaining, show = true, timerCount = 0) {
+    if (!this.elements.totalTimeDisplay || !this.elements.progressRow) return;
+
+    const shouldShow = show && timerCount > 1;
+
+    this.elements.totalTimeDisplay.textContent = formatSecondsToClock(
+      totalRemaining ?? 0,
+    );
+
+    this.elements.totalTimeDisplay.classList.toggle("hidden", !shouldShow);
+
+    this.elements.progressRow.classList.toggle("single-timer", !shouldShow);
+    this.elements.progressRow.classList.toggle("has-total-time", shouldShow);
   }
 
   updateMainDisplay({ label, remaining, progress, index, total }) {
@@ -480,6 +507,8 @@ export class UIManager {
       index: 0,
       total: 0,
     });
+
+    this.updateTotalTimeDisplay(0, false, 0);
 
     if (this.elements.heroQueue) {
       this.renderHeroQueue([], 0);
