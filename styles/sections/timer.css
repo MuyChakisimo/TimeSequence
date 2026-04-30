@@ -65,6 +65,13 @@
   font-size: 0.6em;
 }
 
+.extra-plus {
+  display: inline-block;
+  font-size: 0.6em;
+  transform: translateY(-0.2em);
+  margin-right: 0.05em;
+}
+
 /* =========================
    STATUS TEXT
 ========================= */

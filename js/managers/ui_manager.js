@@ -394,8 +394,12 @@ export class UIManager {
 
     if (this.elements.mainTimer) {
       const time = formatSecondsToClock(remaining ?? 0);
+      const displayTime =
+        label === "Extra Time"
+          ? `<span class="extra-plus">+</span>${time}`
+          : time;
 
-      this.elements.mainTimer.innerHTML = time.replace(
+      this.elements.mainTimer.innerHTML = displayTime.replace(
         /:/g,
         "<span class='colon'>:</span>",
       );
