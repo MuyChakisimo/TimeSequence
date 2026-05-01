@@ -36,6 +36,7 @@ export class UIManager {
       currentLabel: document.getElementById("currentLabel"),
       subStatus: document.getElementById("subStatus"),
       progressBar: document.getElementById("progressBar"),
+      continuousButton: document.getElementById("continuousButton"),
       progressRow: document.getElementById("progressRow"),
       totalTimeDisplay: document.getElementById("totalTimeDisplay"),
 
@@ -218,6 +219,12 @@ export class UIManager {
       });
     }
 
+    if (el.continuousButton) {
+      el.continuousButton.addEventListener("click", () => {
+        this.bus.emit("ui:toggle-continuous");
+      });
+    }
+
     if (el.startOverButton) {
       el.startOverButton.addEventListener("click", () => {
         if (el.startOverButton.disabled) return;
@@ -380,6 +387,16 @@ export class UIManager {
     this.elements.heroQueue.innerHTML = timerChips + totalChip + extraChip;
   }
 
+  updateContinuousButton(enabled) {
+    if (!this.elements.continuousButton) return;
+
+    this.elements.continuousButton.classList.toggle("is-active", enabled);
+    this.elements.continuousButton.setAttribute(
+      "aria-pressed",
+      String(enabled),
+    );
+  }
+
   updateTotalTimeDisplay(totalRemaining, show = true, timerCount = 0) {
     if (!this.elements.totalTimeDisplay || !this.elements.progressRow) return;
 
@@ -401,11 +418,14 @@ export class UIManager {
     }
 
     if (this.elements.mainTimer) {
-      const time = formatSecondsToClock(remaining ?? 0);
+      const isNegative = (remaining ?? 0) < 0;
+      const absoluteTime = formatSecondsToClock(Math.abs(remaining ?? 0));
       const displayTime =
         label === "Extra Time"
-          ? `<span class="extra-plus">+</span>${time}`
-          : time;
+          ? `<span class="extra-plus">+</span>${absoluteTime}`
+          : isNegative
+            ? `-${absoluteTime}`
+            : absoluteTime;
 
       this.elements.mainTimer.innerHTML = displayTime.replace(
         /:/g,
@@ -466,18 +486,26 @@ export class UIManager {
     this.elements.updateAppButton.classList.toggle("hidden", !show);
   }
 
-  updateControlState({ hasTimers, isRunning, isPaused }) {
+  updateControlState({
+    hasTimers,
+    isRunning,
+    isPaused,
+    isContinuousOverrunRunning = false,
+    isContinuousOverrunPaused = false,
+  }) {
     const {
       startButton,
       pauseButton,
       reverseButton,
       skipButton,
+      continuousButton,
       startOverButton,
       clearAllButton,
     } = this.elements;
 
     if (startButton) {
-      startButton.disabled = !hasTimers || isRunning;
+      startButton.disabled =
+        !hasTimers || isRunning || isContinuousOverrunRunning;
       startButton.setAttribute("aria-disabled", String(startButton.disabled));
       startButton.classList.toggle("is-disabled", startButton.disabled);
       startButton.classList.toggle("is-active", isRunning);
@@ -491,7 +519,7 @@ export class UIManager {
     }
 
     if (reverseButton) {
-      reverseButton.disabled = !hasTimers;
+      reverseButton.disabled = !hasTimers || isContinuousOverrunRunning;
       reverseButton.setAttribute(
         "aria-disabled",
         String(reverseButton.disabled),
@@ -500,13 +528,25 @@ export class UIManager {
     }
 
     if (skipButton) {
-      skipButton.disabled = !hasTimers || (!isRunning && !isPaused);
+      skipButton.disabled = !hasTimers || isContinuousOverrunRunning;
       skipButton.setAttribute("aria-disabled", String(skipButton.disabled));
       skipButton.classList.toggle("is-disabled", skipButton.disabled);
     }
 
+    if (continuousButton) {
+      continuousButton.disabled = false;
+      continuousButton.setAttribute(
+        "aria-disabled",
+        String(continuousButton.disabled),
+      );
+      continuousButton.classList.toggle(
+        "is-disabled",
+        continuousButton.disabled,
+      );
+    }
+
     if (startOverButton) {
-      startOverButton.disabled = !hasTimers;
+      startOverButton.disabled = !hasTimers || isContinuousOverrunRunning;
       startOverButton.setAttribute(
         "aria-disabled",
         String(startOverButton.disabled),
@@ -515,12 +555,50 @@ export class UIManager {
     }
 
     if (clearAllButton) {
-      clearAllButton.disabled = !hasTimers;
+      clearAllButton.disabled = !hasTimers || isContinuousOverrunRunning;
       clearAllButton.setAttribute(
         "aria-disabled",
         String(clearAllButton.disabled),
       );
       clearAllButton.classList.toggle("is-disabled", clearAllButton.disabled);
+    }
+
+    if (isContinuousOverrunPaused) {
+      if (reverseButton) {
+        reverseButton.disabled = !hasTimers;
+        reverseButton.setAttribute(
+          "aria-disabled",
+          String(reverseButton.disabled),
+        );
+        reverseButton.classList.toggle("is-disabled", reverseButton.disabled);
+      }
+
+      if (skipButton) {
+        skipButton.disabled = !hasTimers;
+        skipButton.setAttribute("aria-disabled", String(skipButton.disabled));
+        skipButton.classList.toggle("is-disabled", skipButton.disabled);
+      }
+
+      if (startOverButton) {
+        startOverButton.disabled = !hasTimers;
+        startOverButton.setAttribute(
+          "aria-disabled",
+          String(startOverButton.disabled),
+        );
+        startOverButton.classList.toggle(
+          "is-disabled",
+          startOverButton.disabled,
+        );
+      }
+
+      if (clearAllButton) {
+        clearAllButton.disabled = !hasTimers;
+        clearAllButton.setAttribute(
+          "aria-disabled",
+          String(clearAllButton.disabled),
+        );
+        clearAllButton.classList.toggle("is-disabled", clearAllButton.disabled);
+      }
     }
   }
 

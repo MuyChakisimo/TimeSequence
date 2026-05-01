@@ -8,6 +8,9 @@ export class TimerManager {
     this.paused = false;
     this.currentDuration = 0;
     this.remaining = 0;
+
+    this.overrun = false;
+    this.overrunElapsed = 0;
   }
 
   init() {
@@ -35,6 +38,17 @@ export class TimerManager {
         });
       }
 
+      if (type === "overtime-tick") {
+        this.overrun = true;
+        this.overrunElapsed = payload.elapsed;
+
+        this.bus.emit("timer:tick", {
+          remaining: -payload.elapsed,
+          duration: 0,
+          progress: 0,
+        });
+      }
+
       if (type === "done") {
         this.running = false;
         this.paused = false;
@@ -52,6 +66,8 @@ export class TimerManager {
   }
 
   start(duration) {
+    this.overrun = false;
+    this.overrunElapsed = 0;
     this.currentDuration = duration;
     this.remaining = duration;
     this.running = true;
@@ -65,22 +81,57 @@ export class TimerManager {
     this.logger.info("Timer started", { duration });
   }
 
+  startOverrun() {
+    this.overrun = true;
+    this.overrunElapsed = 0;
+    this.currentDuration = 0;
+    this.remaining = 0;
+    this.running = true;
+    this.paused = false;
+
+    this.worker.postMessage({
+      type: "startOverrun",
+    });
+
+    this.logger.info("Continuous overrun started");
+  }
+
   pause() {
     if (!this.running) return;
 
     this.running = false;
-    this.paused = this.remaining > 0;
+    this.paused = true;
 
     this.worker.postMessage({ type: "pause" });
 
-    this.logger.info("Timer paused", { remaining: this.remaining });
+    this.logger.info("Timer paused", {
+      remaining: this.remaining,
+      overrunElapsed: this.overrunElapsed,
+      overrun: this.overrun,
+    });
   }
 
   resume() {
-    if (this.running || this.remaining <= 0) return;
+    if (this.running) return;
 
     this.running = true;
     this.paused = false;
+
+    if (this.overrun) {
+      this.worker.postMessage({
+        type: "resumeOverrun",
+        payload: {
+          elapsed: this.overrunElapsed,
+        },
+      });
+
+      this.logger.info("Continuous overrun resumed", {
+        elapsed: this.overrunElapsed,
+      });
+      return;
+    }
+
+    if (this.remaining <= 0) return;
 
     this.worker.postMessage({
       type: "resume",
@@ -97,6 +148,8 @@ export class TimerManager {
   }
 
   reset(duration) {
+    this.overrun = false;
+    this.overrunElapsed = 0;
     this.running = false;
     this.paused = true;
     this.currentDuration = duration;
@@ -114,6 +167,8 @@ export class TimerManager {
   }
 
   stop() {
+    this.overrun = false;
+    this.overrunElapsed = 0;
     this.running = false;
     this.paused = false;
     this.currentDuration = 0;
@@ -135,7 +190,15 @@ export class TimerManager {
     return this.paused;
   }
 
+  isOverrun() {
+    return this.overrun;
+  }
+
   getRemaining() {
     return this.remaining;
+  }
+
+  getOverrunElapsed() {
+    return this.overrunElapsed;
   }
 }

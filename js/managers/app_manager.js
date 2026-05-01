@@ -8,8 +8,9 @@ export class AppManager {
     this.sequence = sequence;
     this.timer = timer;
     this.ui = ui;
-
     this.isRunningExtraTime = false;
+    this.isInContinuousOverrun = false;
+    this.lastExtraTimeDuration = 0;
   }
 
   init() {
@@ -64,9 +65,43 @@ export class AppManager {
       this.refreshUI();
     });
 
+    this.bus.on("ui:toggle-continuous", () => {
+      this.sequence.setContinuousEnabled(!this.sequence.getContinuousEnabled());
+      this.refreshUI();
+    });
+
     this.bus.on("ui:reverse", () => {
       const timers = this.sequence.getAllTimers();
       if (!timers.length) return;
+
+      if (this.isInContinuousOverrun) {
+        if (!this.timer.isPaused()) return;
+
+        this.isInContinuousOverrun = false;
+        this.timer.stop();
+
+        if (this.lastExtraTimeDuration > 0) {
+          this.isRunningExtraTime = true;
+          this.timer.reset(this.lastExtraTimeDuration);
+          this.refreshUI();
+          return;
+        }
+
+        const timers = this.sequence.getAllTimers();
+        if (!timers.length) return;
+
+        while (this.sequence.hasNext()) {
+          this.sequence.advance();
+        }
+
+        const current = this.sequence.getCurrentTimer();
+        if (current) {
+          this.timer.reset(current.duration);
+        }
+
+        this.refreshUI();
+        return;
+      }
 
       // If we are in Extra Time, go back to the most recently skipped timer
       if (this.isRunningExtraTime) {
@@ -129,6 +164,18 @@ export class AppManager {
       const wasRunning = this.timer.isRunning();
       const wasPaused = this.timer.isPaused();
 
+      if (this.isInContinuousOverrun) {
+        if (!this.timer.isPaused()) return;
+
+        this.isInContinuousOverrun = false;
+        this.timer.stop();
+        this.sequence.clearExtraTime();
+        this.sequence.clearSkipHistory();
+        this.sequence.resetSequencePosition();
+        this.refreshUI();
+        return;
+      }
+
       if (this.isRunningExtraTime) {
         this.isRunningExtraTime = false;
         this.sequence.clearExtraTime();
@@ -175,6 +222,7 @@ export class AppManager {
 
       if (extraTimeRemaining > 0) {
         this.isRunningExtraTime = true;
+        this.lastExtraTimeDuration = extraTimeRemaining;
 
         if (wasRunning) {
           this.timer.start(extraTimeRemaining);
@@ -201,6 +249,8 @@ export class AppManager {
       this.sequence.clearExtraTime();
       this.sequence.clearSkipHistory();
       this.sequence.resetSequencePosition();
+      this.isInContinuousOverrun = false;
+      this.lastExtraTimeDuration = 0;
       this.refreshUI();
     });
 
@@ -218,6 +268,8 @@ export class AppManager {
       this.sequence.clearSkipHistory();
       this.sequence.clearAll();
       this.ui.setIdleDisplay();
+      this.isInContinuousOverrun = false;
+      this.lastExtraTimeDuration = 0;
       this.refreshUI();
     });
 
@@ -244,8 +296,9 @@ export class AppManager {
       this.sequence.clearAll();
       this.sequence.addTimers(preset.timers);
       this.sequence.resetSequencePosition();
-
       this.bus.emit("menu:close");
+      this.isInContinuousOverrun = false;
+      this.lastExtraTimeDuration = 0;
       this.refreshUI();
     });
 
@@ -326,12 +379,22 @@ export class AppManager {
 
       if (extraTimeRemaining > 0) {
         this.isRunningExtraTime = true;
+        this.lastExtraTimeDuration = extraTimeRemaining;
         this.timer.start(extraTimeRemaining);
         this.refreshUI();
         return;
       }
 
+      if (this.sequence.getContinuousEnabled()) {
+        this.isRunningExtraTime = false;
+        this.isInContinuousOverrun = true;
+        this.timer.startOverrun();
+        this.refreshUI();
+        return;
+      }
+
       this.isRunningExtraTime = false;
+      this.isInContinuousOverrun = false;
       this.timer.stop();
       this.sequence.resetSequencePosition();
       this.ui.setIdleDisplay();
@@ -467,6 +530,10 @@ export class AppManager {
       hasTimers,
       isRunning: this.timer.isRunning(),
       isPaused: this.timer.isPaused(),
+      isContinuousOverrunRunning:
+        this.isInContinuousOverrun && this.timer.isRunning(),
+      isContinuousOverrunPaused:
+        this.isInContinuousOverrun && this.timer.isPaused(),
     });
   }
 
@@ -493,7 +560,13 @@ export class AppManager {
       hasTimers,
       isRunning: this.timer.isRunning(),
       isPaused: this.timer.isPaused(),
+      isContinuousOverrunRunning:
+        this.isInContinuousOverrun && this.timer.isRunning(),
+      isContinuousOverrunPaused:
+        this.isInContinuousOverrun && this.timer.isPaused(),
     });
+
+    this.ui.updateContinuousButton(this.sequence.getContinuousEnabled());
 
     this.ui.updateTotalTimeDisplay(
       this.getTotalRemaining(),
@@ -517,6 +590,19 @@ export class AppManager {
       }
 
       this.ui.setIdleDisplay();
+      return;
+    }
+
+    if (this.isInContinuousOverrun) {
+      const overrunRemaining = -this.timer.getOverrunElapsed();
+
+      this.ui.updateMainDisplay({
+        label: "Continuous",
+        remaining: overrunRemaining,
+        progress: 0,
+        index: timers.length,
+        total: timers.length,
+      });
       return;
     }
 

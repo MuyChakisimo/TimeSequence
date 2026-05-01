@@ -10,6 +10,7 @@ export class SequenceManager {
       buzzerEnabled: true,
       extraTimeRemaining: 0,
       skipHistory: [],
+      continuousEnabled: false,
     };
   }
 
@@ -176,6 +177,7 @@ export class SequenceManager {
       buzzerEnabled: this.state.buzzerEnabled,
       extraTimeRemaining: this.state.extraTimeRemaining,
       skipHistory: this.state.skipHistory,
+      continuousEnabled: this.state.continuousEnabled,
     };
   }
 
@@ -186,5 +188,14 @@ export class SequenceManager {
 
   emitUpdate() {
     this.bus.emit("sequence:updated", this.toJSON());
+  }
+
+  setContinuousEnabled(enabled) {
+    this.state.continuousEnabled = Boolean(enabled);
+    this.persist();
+  }
+
+  getContinuousEnabled() {
+    return Boolean(this.state.continuousEnabled);
   }
 }
