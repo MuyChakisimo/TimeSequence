@@ -27,8 +27,9 @@ export class UIManager {
 
       startButton: document.getElementById("startButton"),
       pauseButton: document.getElementById("pauseButton"),
+      reverseButton: document.getElementById("reverseButton"),
       skipButton: document.getElementById("skipButton"),
-      resetButton: document.getElementById("resetButton"),
+      startOverButton: document.getElementById("startOverButton"),
       clearAllButton: document.getElementById("clearAllButton"),
 
       mainTimer: document.getElementById("mainTimer"),
@@ -203,6 +204,13 @@ export class UIManager {
       });
     }
 
+    if (el.reverseButton) {
+      el.reverseButton.addEventListener("click", () => {
+        if (el.reverseButton.disabled) return;
+        this.bus.emit("ui:reverse");
+      });
+    }
+
     if (el.skipButton) {
       el.skipButton.addEventListener("click", () => {
         if (el.skipButton.disabled) return;
@@ -210,10 +218,10 @@ export class UIManager {
       });
     }
 
-    if (el.resetButton) {
-      el.resetButton.addEventListener("click", () => {
-        if (el.resetButton.disabled) return;
-        this.bus.emit("ui:reset");
+    if (el.startOverButton) {
+      el.startOverButton.addEventListener("click", () => {
+        if (el.startOverButton.disabled) return;
+        this.bus.emit("ui:start-over");
       });
     }
 
@@ -462,8 +470,9 @@ export class UIManager {
     const {
       startButton,
       pauseButton,
+      reverseButton,
       skipButton,
-      resetButton,
+      startOverButton,
       clearAllButton,
     } = this.elements;
 
@@ -481,16 +490,28 @@ export class UIManager {
       pauseButton.classList.toggle("is-active", isPaused);
     }
 
+    if (reverseButton) {
+      reverseButton.disabled = !hasTimers;
+      reverseButton.setAttribute(
+        "aria-disabled",
+        String(reverseButton.disabled),
+      );
+      reverseButton.classList.toggle("is-disabled", reverseButton.disabled);
+    }
+
     if (skipButton) {
       skipButton.disabled = !hasTimers || (!isRunning && !isPaused);
       skipButton.setAttribute("aria-disabled", String(skipButton.disabled));
       skipButton.classList.toggle("is-disabled", skipButton.disabled);
     }
 
-    if (resetButton) {
-      resetButton.disabled = !hasTimers || (!isRunning && !isPaused);
-      resetButton.setAttribute("aria-disabled", String(resetButton.disabled));
-      resetButton.classList.toggle("is-disabled", resetButton.disabled);
+    if (startOverButton) {
+      startOverButton.disabled = !hasTimers;
+      startOverButton.setAttribute(
+        "aria-disabled",
+        String(startOverButton.disabled),
+      );
+      startOverButton.classList.toggle("is-disabled", startOverButton.disabled);
     }
 
     if (clearAllButton) {

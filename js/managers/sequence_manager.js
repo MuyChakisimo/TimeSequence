@@ -9,6 +9,7 @@ export class SequenceManager {
       currentIndex: 0,
       buzzerEnabled: true,
       extraTimeRemaining: 0,
+      skipHistory: [],
     };
   }
 
@@ -59,6 +60,7 @@ export class SequenceManager {
     this.state.timers = [];
     this.state.currentIndex = 0;
     this.state.extraTimeRemaining = 0;
+    this.state.skipHistory = [];
     this.persist();
   }
 
@@ -79,12 +81,55 @@ export class SequenceManager {
     this.persist();
   }
 
+  subtractExtraTime(seconds) {
+    const safeSeconds = Math.max(0, Math.floor(Number(seconds) || 0));
+    this.state.extraTimeRemaining = Math.max(
+      0,
+      this.state.extraTimeRemaining - safeSeconds,
+    );
+    this.persist();
+  }
+
   getExtraTimeRemaining() {
     return this.state.extraTimeRemaining || 0;
   }
 
   clearExtraTime() {
     this.state.extraTimeRemaining = 0;
+    this.persist();
+  }
+
+  recordSkip(timerIndex, extraSeconds) {
+    const safeSeconds = Math.max(0, Math.floor(Number(extraSeconds) || 0));
+    if (safeSeconds <= 0) return;
+
+    this.state.skipHistory.push({
+      timerIndex,
+      extraSeconds: safeSeconds,
+    });
+
+    this.persist();
+  }
+
+  getSkipHistory() {
+    return [...this.state.skipHistory];
+  }
+
+  getLastSkip() {
+    return this.state.skipHistory.length
+      ? this.state.skipHistory[this.state.skipHistory.length - 1]
+      : null;
+  }
+
+  popLastSkip() {
+    if (!this.state.skipHistory.length) return null;
+    const removed = this.state.skipHistory.pop();
+    this.persist();
+    return removed;
+  }
+
+  clearSkipHistory() {
+    this.state.skipHistory = [];
     this.persist();
   }
 
@@ -110,6 +155,12 @@ export class SequenceManager {
     this.emitUpdate();
   }
 
+  moveBack() {
+    this.state.currentIndex = Math.max(0, this.state.currentIndex - 1);
+    this.persist(false);
+    this.emitUpdate();
+  }
+
   hasNext() {
     return this.state.currentIndex < this.state.timers.length - 1;
   }
@@ -124,6 +175,7 @@ export class SequenceManager {
       currentIndex: this.state.currentIndex,
       buzzerEnabled: this.state.buzzerEnabled,
       extraTimeRemaining: this.state.extraTimeRemaining,
+      skipHistory: this.state.skipHistory,
     };
   }
 

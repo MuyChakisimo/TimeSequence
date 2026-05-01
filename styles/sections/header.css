@@ -98,7 +98,7 @@
 
 .boombox-controls {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   align-items: stretch;
 
   width: 100%;
@@ -189,6 +189,10 @@
   color: #ff4d4d;
 }
 
+.boombox-button.btn-reverse {
+  color: #ff66c4;
+}
+
 /* Glow only when pressed */
 .boombox-button.btn-play:active .btn-icon,
 .boombox-button.btn-play:active .btn-label {
@@ -223,6 +227,13 @@
   text-shadow:
     0 0 4px rgba(255, 77, 77, 0.55),
     0 0 10px rgba(255, 77, 77, 0.28);
+}
+
+.boombox-button.btn-reverse:active .btn-icon,
+.boombox-button.btn-reverse:active .btn-label {
+  text-shadow:
+    0 0 4px rgba(255, 102, 196, 0.55),
+    0 0 10px rgba(255, 102, 196, 0.28);
 }
 
 /* TABLET */

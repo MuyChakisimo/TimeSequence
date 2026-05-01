@@ -64,10 +64,75 @@ export class AppManager {
       this.refreshUI();
     });
 
+    this.bus.on("ui:reverse", () => {
+      const timers = this.sequence.getAllTimers();
+      if (!timers.length) return;
+
+      // If we are in Extra Time, go back to the most recently skipped timer
+      if (this.isRunningExtraTime) {
+        const lastSkip = this.sequence.getLastSkip();
+        if (!lastSkip) return;
+
+        this.isRunningExtraTime = false;
+        this.timer.stop();
+
+        this.sequence.subtractExtraTime(lastSkip.extraSeconds);
+        this.sequence.popLastSkip();
+
+        while (this.sequence.getCurrentIndex() > lastSkip.timerIndex) {
+          this.sequence.moveBack();
+        }
+
+        this.refreshUI();
+        return;
+      }
+
+      const current = this.sequence.getCurrentTimer();
+      if (!current) return;
+
+      const remaining = this.timer.getRemaining();
+      const currentIsInProgress =
+        this.timer.isRunning() ||
+        (this.timer.isPaused() &&
+          remaining > 0 &&
+          remaining < current.duration);
+
+      // Case 1: current timer has actually started and is not at full time
+      if (currentIsInProgress) {
+        this.timer.reset(current.duration);
+        this.refreshUI();
+        return;
+      }
+
+      // Case 2: current timer is already at full duration, so go back if possible
+      if (this.sequence.getCurrentIndex() === 0) {
+        this.refreshUI();
+        return;
+      }
+
+      const previousIndex = this.sequence.getCurrentIndex() - 1;
+      const lastSkip = this.sequence.getLastSkip();
+
+      this.sequence.moveBack();
+
+      // If the timer we just moved back to was previously skipped,
+      // undo that skipped extra time contribution
+      if (lastSkip && lastSkip.timerIndex === previousIndex) {
+        this.sequence.subtractExtraTime(lastSkip.extraSeconds);
+        this.sequence.popLastSkip();
+      }
+
+      this.refreshUI();
+    });
+
     this.bus.on("ui:skip", () => {
+      const wasRunning = this.timer.isRunning();
+      const wasPaused = this.timer.isPaused();
+
       if (this.isRunningExtraTime) {
         this.isRunningExtraTime = false;
         this.sequence.clearExtraTime();
+        this.sequence.clearSkipHistory();
         this.timer.stop();
         this.sequence.resetSequencePosition();
         this.ui.setIdleDisplay();
@@ -78,6 +143,7 @@ export class AppManager {
       const current = this.sequence.getCurrentTimer();
       if (!current) return;
 
+      const currentIndex = this.sequence.getCurrentIndex();
       const remaining =
         this.timer.getRemaining() > 0
           ? this.timer.getRemaining()
@@ -85,6 +151,7 @@ export class AppManager {
 
       if (remaining > 0) {
         this.sequence.addExtraTime(remaining);
+        this.sequence.recordSkip(currentIndex, remaining);
       }
 
       this.timer.stop();
@@ -93,7 +160,13 @@ export class AppManager {
         this.isRunningExtraTime = false;
         this.sequence.advance();
         const next = this.sequence.getCurrentTimer();
-        this.timer.start(next.duration);
+
+        if (wasRunning && next) {
+          this.timer.start(next.duration);
+        } else if (wasPaused && next) {
+          this.timer.reset(next.duration);
+        }
+
         this.refreshUI();
         return;
       }
@@ -102,7 +175,13 @@ export class AppManager {
 
       if (extraTimeRemaining > 0) {
         this.isRunningExtraTime = true;
-        this.timer.start(extraTimeRemaining);
+
+        if (wasRunning) {
+          this.timer.start(extraTimeRemaining);
+        } else if (wasPaused) {
+          this.timer.reset(extraTimeRemaining);
+        }
+
         this.refreshUI();
         return;
       }
@@ -113,11 +192,15 @@ export class AppManager {
       this.refreshUI();
     });
 
-    this.bus.on("ui:reset", () => {
-      const current = this.sequence.getCurrentTimer();
-      if (!current) return;
+    this.bus.on("ui:start-over", () => {
+      const timers = this.sequence.getAllTimers();
+      if (!timers.length) return;
 
-      this.timer.reset(current.duration);
+      this.isRunningExtraTime = false;
+      this.timer.stop();
+      this.sequence.clearExtraTime();
+      this.sequence.clearSkipHistory();
+      this.sequence.resetSequencePosition();
       this.refreshUI();
     });
 
@@ -130,8 +213,9 @@ export class AppManager {
       }
 
       this.isRunningExtraTime = false;
-
       this.timer.stop();
+      this.sequence.clearExtraTime();
+      this.sequence.clearSkipHistory();
       this.sequence.clearAll();
       this.ui.setIdleDisplay();
       this.refreshUI();
@@ -154,8 +238,9 @@ export class AppManager {
       }
 
       this.isRunningExtraTime = false;
-
       this.timer.stop();
+      this.sequence.clearExtraTime();
+      this.sequence.clearSkipHistory();
       this.sequence.clearAll();
       this.sequence.addTimers(preset.timers);
       this.sequence.resetSequencePosition();
@@ -220,6 +305,7 @@ export class AppManager {
       if (this.isRunningExtraTime) {
         this.isRunningExtraTime = false;
         this.sequence.clearExtraTime();
+        this.sequence.clearSkipHistory();
         this.timer.stop();
         this.sequence.resetSequencePosition();
         this.ui.setIdleDisplay();
@@ -353,6 +439,15 @@ export class AppManager {
       .reduce((sum, timer) => sum + (timer.duration || 0), 0);
 
     return currentRemaining + remainingAfterCurrent + extraTimeRemaining;
+  }
+
+  isCurrentTimerAtFullDuration() {
+    const current = this.sequence.getCurrentTimer();
+    if (!current) return false;
+
+    const remaining = this.timer.getRemaining();
+
+    return !this.timer.isRunning() && !this.timer.isPaused() && remaining <= 0;
   }
 
   getDisplayedExtraTimeRemaining() {
