@@ -424,13 +424,15 @@ export class UIManager {
         label === "Extra Time"
           ? `<span class="extra-plus">+</span>${absoluteTime}`
           : isNegative
-            ? `-${absoluteTime}`
+            ? `<span class="negative-sign">-</span>${absoluteTime}`
             : absoluteTime;
 
       this.elements.mainTimer.innerHTML = displayTime.replace(
         /:/g,
         "<span class='colon'>:</span>",
       );
+
+      this.elements.mainTimer.classList.toggle("is-negative", isNegative);
 
       this.fitTimerText();
     }
@@ -534,7 +536,7 @@ export class UIManager {
     }
 
     if (continuousButton) {
-      continuousButton.disabled = false;
+      continuousButton.disabled = isContinuousOverrunRunning;
       continuousButton.setAttribute(
         "aria-disabled",
         String(continuousButton.disabled),

@@ -328,9 +328,11 @@ export class AppManager {
       const current = this.sequence.getCurrentTimer();
 
       this.ui.updateMainDisplay({
-        label: this.isRunningExtraTime
-          ? "Extra Time"
-          : current?.label || "No Timer Loaded",
+        label: this.isInContinuousOverrun
+          ? "WRAP IT UP"
+          : this.isRunningExtraTime
+            ? "Extra Time"
+            : current?.label || "No Timer Loaded",
         remaining,
         progress,
         index: this.sequence.getCurrentIndex(),
@@ -359,6 +361,15 @@ export class AppManager {
         this.isRunningExtraTime = false;
         this.sequence.clearExtraTime();
         this.sequence.clearSkipHistory();
+
+        if (this.sequence.getContinuousEnabled()) {
+          this.isInContinuousOverrun = true;
+          this.timer.startOverrun();
+          this.refreshUI();
+          return;
+        }
+
+        this.isInContinuousOverrun = false;
         this.timer.stop();
         this.sequence.resetSequencePosition();
         this.ui.setIdleDisplay();
@@ -478,6 +489,10 @@ export class AppManager {
     const current = this.sequence.getCurrentTimer();
     const extraTimeRemaining = this.sequence.getExtraTimeRemaining();
 
+    if (this.isInContinuousOverrun) {
+      return 0;
+    }
+
     if (this.isRunningExtraTime) {
       return this.timer.getRemaining() > 0
         ? this.timer.getRemaining()
@@ -502,15 +517,6 @@ export class AppManager {
       .reduce((sum, timer) => sum + (timer.duration || 0), 0);
 
     return currentRemaining + remainingAfterCurrent + extraTimeRemaining;
-  }
-
-  isCurrentTimerAtFullDuration() {
-    const current = this.sequence.getCurrentTimer();
-    if (!current) return false;
-
-    const remaining = this.timer.getRemaining();
-
-    return !this.timer.isRunning() && !this.timer.isPaused() && remaining <= 0;
   }
 
   getDisplayedExtraTimeRemaining() {
@@ -574,6 +580,19 @@ export class AppManager {
       timers.length,
     );
 
+    if (this.isInContinuousOverrun) {
+      const overrunRemaining = -this.timer.getOverrunElapsed();
+
+      this.ui.updateMainDisplay({
+        label: "WRAP IT UP",
+        remaining: overrunRemaining,
+        progress: 0,
+        index: timers.length,
+        total: timers.length,
+      });
+      return;
+    }
+
     if (!current && !this.isRunningExtraTime) {
       if (this.sequence.getExtraTimeRemaining() > 0) {
         this.ui.updateMainDisplay({
@@ -590,19 +609,6 @@ export class AppManager {
       }
 
       this.ui.setIdleDisplay();
-      return;
-    }
-
-    if (this.isInContinuousOverrun) {
-      const overrunRemaining = -this.timer.getOverrunElapsed();
-
-      this.ui.updateMainDisplay({
-        label: "Continuous",
-        remaining: overrunRemaining,
-        progress: 0,
-        index: timers.length,
-        total: timers.length,
-      });
       return;
     }
 

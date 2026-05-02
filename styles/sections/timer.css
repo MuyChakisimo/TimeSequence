@@ -72,6 +72,13 @@
   margin-right: 0.05em;
 }
 
+.negative-sign {
+  display: inline-block;
+  font-size: 0.45em;
+  transform: translateY(-0.5em);
+  margin-right: 0.04em;
+}
+
 /* =========================
    STATUS TEXT
 ========================= */
@@ -104,4 +111,19 @@
     font-size: 0.72rem;
     letter-spacing: 0.03em;
   }
+}
+
+@keyframes negative-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.main-timer.is-negative,
+.giant-timer.is-negative {
+  animation: negative-flicker 1.4s ease-in-out infinite;
 }
